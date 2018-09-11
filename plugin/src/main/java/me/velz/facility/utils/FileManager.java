@@ -1,0 +1,97 @@
+package me.velz.facility.utils;
+
+import java.util.ArrayList;
+import lombok.Getter;
+import lombok.Setter;
+import me.velz.facility.Facility;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+
+public class FileManager {
+
+    @Getter
+    @Setter
+    private String chatFormat, teleportSoundType;
+
+    @Getter
+    private ArrayList<String> motds;
+
+    @Getter
+    private Integer teleportDelay;
+    
+    @Getter
+    private boolean teleportSoundEnabled;
+    
+    @Getter @Setter
+    private Location spawnLocation;
+
+    @Getter
+    private final FileBuilder config, spawn;
+
+    public FileManager() {
+        config = new FileBuilder("plugins/Facility/", "config.yml");
+        spawn = new FileBuilder("plugins/Facility/data/", "spawn.yml");
+        setDefaults();
+        load();
+    }
+
+    public final void load() {
+        this.getConfig().load();
+        
+        // Database
+        Facility.getInstance().getMysqlDatabase().setServerName(this.getConfig().getString("database.host"));
+        Facility.getInstance().getMysqlDatabase().setPort(this.getConfig().getInt("database.port"));
+        Facility.getInstance().getMysqlDatabase().setUser(this.getConfig().getString("database.user"));
+        Facility.getInstance().getMysqlDatabase().setPassword(this.getConfig().getString("database.password"));
+        Facility.getInstance().getMysqlDatabase().setDatabaseName(this.getConfig().getString("database.database"));
+        Facility.getInstance().getMysqlDatabase().setPrefix(this.getConfig().getString("database.prefix"));
+
+        // Chat
+        chatFormat = this.getConfig().getString("chat.format");
+        
+        // Teleport
+        teleportDelay = this.getConfig().getInt("teleport.delay");
+        teleportSoundEnabled = this.getConfig().getBoolean("teleport.sound.enabled");
+        teleportSoundType = this.getConfig().getString("teleport.sound.type");
+        
+        // Server Motd
+        motds = new ArrayList<>();
+        this.getConfig().getConfiguration().getConfigurationSection("serverlist.motd").getKeys(false).forEach((motd) -> {
+            motds.add(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("serverlist.motd." + motd)));
+        });
+        
+        this.getSpawn().load();
+        Bukkit.getScheduler().runTaskLater(Facility.getInstance(), () -> {
+            if (spawn.getConfiguration().contains("spawn")) {
+                spawnLocation = spawn.getLocation("spawn");
+            }
+        }, 60L);
+    }
+
+    public final void setDefaults() {
+        // Database
+        this.getConfig().addDefault("database.host", "localhost");
+        this.getConfig().addDefault("database.port", 3306);
+        this.getConfig().addDefault("database.user", "root");
+        this.getConfig().addDefault("database.password", "123456");
+        this.getConfig().addDefault("database.database", "Facility");
+        this.getConfig().addDefault("database.prefix", "facility_");
+        
+        // Chat
+        this.getConfig().addDefault("chat.format", "%prefix%player &7>&7 %message");
+
+        // Teleport
+        this.getConfig().addDefault("teleport.delay", 3);
+        this.getConfig().addDefault("teleport.sound.enabled", false);
+        this.getConfig().addDefault("teleport.sound.type", "ENTITY_ENDERMEN_TELEPORT");
+
+        // Server Motd
+        if (!this.getConfig().getConfiguration().contains("serverlist.motd")) {
+            this.getConfig().addDefault("serverlist.motd.default", "&eFacility\n&eAlles in einem Plugin.");
+        }
+        
+        this.getConfig().save();
+    }
+
+}

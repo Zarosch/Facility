@@ -166,3 +166,5 @@ commands:
     tokens:
         description: Token Command
         aliases: [token]
+    pay:
+        description: Pay Command

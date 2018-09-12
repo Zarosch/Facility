@@ -32,6 +32,7 @@ import me.velz.facility.commands.MotdCommand;
 import me.velz.facility.commands.MsgCommand;
 import me.velz.facility.commands.MuteCommand;
 import me.velz.facility.commands.OpeninvCommand;
+import me.velz.facility.commands.PayCommand;
 import me.velz.facility.commands.PingCommand;
 import me.velz.facility.commands.PlaytimeCommand;
 import me.velz.facility.commands.ReplyCommand;
@@ -178,6 +179,7 @@ public class Facility extends JavaPlugin {
         getCommand("msg").setExecutor(new MsgCommand(this));
         getCommand("mute").setExecutor(new MuteCommand(this));
         getCommand("openinv").setExecutor(new OpeninvCommand());
+        getCommand("pay").setExecutor(new PayCommand());
         getCommand("ping").setExecutor(new PingCommand());
         getCommand("playtime").setExecutor(new PlaytimeCommand(this));
         getCommand("reply").setExecutor(new ReplyCommand(this));

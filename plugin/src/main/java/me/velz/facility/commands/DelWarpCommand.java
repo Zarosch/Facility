@@ -29,7 +29,7 @@ public class DelWarpCommand implements CommandExecutor {
             return true;
         }
         if (args.length != 1) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/setwarp <Warp>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/delwarp <Warp>"));
             return true;
         }
         if (!plugin.getWarps().containsKey(args[0])) {

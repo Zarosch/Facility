@@ -49,12 +49,12 @@
     </build>
     
     <modules>
+        <module>plugin</module>
         <module>abstraction</module>
         <module>1_8_R3</module>
         <module>1_12_R1</module>
         <module>1_13_R1</module>
         <module>1_13_R2</module>
-        <module>plugin</module>
     </modules>
     
     <dependencies>

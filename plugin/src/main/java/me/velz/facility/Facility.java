@@ -215,6 +215,10 @@ public class Facility extends JavaPlugin {
         getCommand("warplist").setExecutor(new WarpListCommand(this));
         getCommand("weather").setExecutor(new WeatherCommand());
         getCommand("workbench").setExecutor(new WorkbenchCommand());
+        getCommand("day").setExecutor(new TimeCommand());
+        getCommand("night").setExecutor(new TimeCommand());
+        getCommand("sun").setExecutor(new WeatherCommand());
+        getCommand("rain").setExecutor(new WeatherCommand());
     }
 
     private void schedul() {

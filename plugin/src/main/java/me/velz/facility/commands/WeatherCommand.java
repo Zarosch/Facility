@@ -59,7 +59,7 @@ public class WeatherCommand implements CommandExecutor {
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="/rain">
         if (cmd.getName().equalsIgnoreCase("rain")) {
-            if (cs.hasPermission("facility.command.weather") || cs.hasPermission("facility.command.rain")) {
+            if (!cs.hasPermission("facility.command.weather") && !cs.hasPermission("facility.command.rain")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

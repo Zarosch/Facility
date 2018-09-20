@@ -29,7 +29,7 @@ public class TimeCommand implements CommandExecutor {
                 return true;
             }
             if (args[0].equalsIgnoreCase("night")) {
-                player.getWorld().setTime(2200);
+                player.getWorld().setTime(22000);
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_TIME_NIGHT.getLocal());
                 return true;
             }
@@ -64,7 +64,7 @@ public class TimeCommand implements CommandExecutor {
             }
 
             Player player = (Player) cs;
-            player.getWorld().setTime(2200);
+            player.getWorld().setTime(22000);
             player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_TIME_NIGHT.getLocal());
         }
         //</editor-fold>

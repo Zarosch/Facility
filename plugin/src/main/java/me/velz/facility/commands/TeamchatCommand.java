@@ -2,6 +2,7 @@ package me.velz.facility.commands;
 
 import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -33,7 +34,7 @@ public class TeamchatCommand implements CommandExecutor {
             message = message.substring(1, message.length());
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player.hasPermission("facility.command.teamchat")) {
-                    player.sendMessage(MessageUtil.CHAT_TEAMCHAT.getLocal().replaceAll("%player", plugin.getImplementations().getVault().getChat().getPlayerPrefix(player) + cs.getName()).replaceAll("%message", message));
+                    player.sendMessage(MessageUtil.CHAT_TEAMCHAT.getLocal().replaceAll("%player", ChatColor.translateAlternateColorCodes('&', plugin.getImplementations().getVault().getChat().getPlayerPrefix(player)) + cs.getName()).replaceAll("%message", message));
                 }
             }
         }

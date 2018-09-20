@@ -19,10 +19,10 @@ public class PlaceHolderAPI extends EZPlaceholderHook {
         if (player != null) {
             DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(player.getUniqueId().toString());
             if (identifier.equals("money")) {
-                return String.valueOf(dbPlayer.getMoney());
+                return String.valueOf((int)dbPlayer.getMoney());
             }
             if (identifier.equals("tokens")) {
-                return String.valueOf(dbPlayer.getToken());
+                return String.valueOf((int)dbPlayer.getToken());
             }
             if (identifier.equals("playtime")) {
                 return plugin.getTools().getPlaytime(dbPlayer.getPlaytime());

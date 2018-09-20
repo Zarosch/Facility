@@ -17,7 +17,7 @@ public class SocialspyCommand implements CommandExecutor {
         final Player player = (Player) cs;
         if (MsgCommand.getSOCIALSPY().contains(player)) {
             MsgCommand.getSOCIALSPY().remove(player);
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.CHAT_GLOBALMUTE_OFF.getLocal());
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.CHAT_SOCIALSPY_OFF.getLocal());
         } else {
             MsgCommand.getSOCIALSPY().add(player);
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.CHAT_SOCIALSPY_ON.getLocal());

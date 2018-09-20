@@ -17,7 +17,11 @@ import org.bukkit.entity.Player;
 
 public class TokensCommand implements CommandExecutor {
 
-    private Facility plugin;
+    private final Facility plugin;
+
+    public TokensCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {

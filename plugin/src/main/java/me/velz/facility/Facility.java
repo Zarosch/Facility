@@ -136,7 +136,7 @@ public class Facility extends JavaPlugin {
     private void loadListener() {
         Bukkit.getPluginManager().registerEvents(new AsyncPlayerChatListener(this), this);
         Bukkit.getPluginManager().registerEvents(new AsyncPlayerPreLoginListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new BlockPhysicsListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new BlockPhysicsListener(), this);
         Bukkit.getPluginManager().registerEvents(new EntityDamageListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerKickListener(this), this);
@@ -199,7 +199,7 @@ public class Facility extends JavaPlugin {
         getCommand("tempban").setExecutor(new TempBanCommand(this));
         getCommand("tempmute").setExecutor(new TempMuteCommand(this));
         getCommand("time").setExecutor(new TimeCommand());
-        getCommand("tokens").setExecutor(new TokensCommand());
+        getCommand("tokens").setExecutor(new TokensCommand(this));
         getCommand("tp").setExecutor(new TpCommand());
         getCommand("tphere").setExecutor(new TpHereCommand());
         getCommand("tploc").setExecutor(new TpLocCommand());

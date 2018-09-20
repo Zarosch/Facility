@@ -221,7 +221,7 @@ public class MySQLDatabase {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
-            String query = "UPDATE " + this.getPrefix() + "players SET firstJoin=?, lastJoin=?, money=?, name=?, playtime=?, ban=?, mute=? WHERE uuid = ?";
+            String query = "UPDATE " + this.getPrefix() + "players SET firstJoin=?, lastJoin=?, money=?, name=?, playtime=?, ban=?, mute=?, token=? WHERE uuid = ?";
             connection = this.getHikari().getConnection();
             ps = connection.prepareStatement(query);
             ps.setLong(1, dbPlayer.getFirstJoin());
@@ -231,7 +231,8 @@ public class MySQLDatabase {
             ps.setInt(5, dbPlayer.getPlaytime());
             ps.setString(6, dbPlayer.getBan());
             ps.setString(7, dbPlayer.getMute());
-            ps.setString(8, uuid);
+            ps.setDouble(8, dbPlayer.getToken());
+            ps.setString(9, uuid);
             ps.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(DatabasePlayer.class.getName()).log(Level.SEVERE, null, ex);

@@ -44,6 +44,7 @@ public class MySQLDatabase {
         hikari.addDataSourceProperty("port", port.toString());
         hikari.addDataSourceProperty("databaseName", databaseName);
         hikari.addDataSourceProperty("user", user);
+        hikari.addDataSourceProperty("useSSL", "false");
         hikari.addDataSourceProperty("password", password);
         hikari.setMaxLifetime(30000);
         createTables();

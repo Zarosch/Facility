@@ -5,7 +5,7 @@ import lombok.Getter;
 public enum MessageUtil {
 
     // Prefix Messages
-    PREFIX("§f[§6Facility§f] "),
+    PREFIX("§7┃ §3Padoria §7┃ "),
     // Error Messages
     ERROR_NOPERMISSIONS("§cDazu hast du keine Berechtigung."),
     ERROR_PLAYERONLY("§cDieser Befehl kann nur von einem Spieler genutzt werden."),
@@ -128,7 +128,7 @@ public enum MessageUtil {
     CHAT_GLOBALMUTE_CANCEL("§cDer Chat wurde deaktiviert, du kannst derzeit leider nichts im Chat schrieben."),
     CHAT_SOCIALSPY_ON("§6Du hast §eSocialspy§6 bis zum nächsten ausloggen §aaktiviert§6."),
     CHAT_SOCIALSPY_OFF("§6Du hast §eSocialspy§6 wieder §cdeaktiviert§6."),
-    CHAT_SOCIALSPY_MSG("§bSOCIALSPY §7[ §6%player §f➡ §6%target §7] §f%message§"),
+    CHAT_SOCIALSPY_MSG("§bSOCIALSPY §7[ §6%player §f➡ §6%target §7] §f%message"),
     CHAT_MOTD("§cWillkommen!\nDieser Server benutzt Facility!"),
     MISC_SPAWNMOB_UNKNOWNMOB("§cDu hast einen ungültigen Entity Type angegeben."),
     MISC_SPAWNMOB_OTHER("§6Du hast §e%amountx %type §6bei §e%player §6erschaffen."),

@@ -5,6 +5,10 @@ import org.bukkit.entity.Player;
 
 public class FacilityAPI {
 
+    public static DatabasePlayer getDatabasePlayer(Player player) {
+        return Facility.getInstance().getPlayers().get(player.getUniqueId().toString());
+    }
+    
     public static boolean hasTokens(Player player, Double tokens) {
         return Facility.getInstance().getPlayers().get(player.getUniqueId().toString()).getToken() >= tokens;
     }

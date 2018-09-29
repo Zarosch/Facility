@@ -1,7 +1,10 @@
 package me.velz.facility.version;
 
+import java.lang.reflect.Field;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_13_R2.EntityPlayer;
+import net.minecraft.server.v1_13_R2.IChatBaseComponent;
+import net.minecraft.server.v1_13_R2.PacketPlayOutPlayerListHeaderFooter;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
@@ -26,7 +29,23 @@ public class Version_1_13_R2 implements Version {
 
     @Override
     public void setTablist(Player player, String header, String footer) {
-        player.setPlayerListHeaderFooter(header, footer);
+        IChatBaseComponent tabHeader = IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + header + "\"}");
+        IChatBaseComponent tabFooter = IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + footer + "\"}");
+
+        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
+
+        try {
+            Field fieldA = packet.getClass().getDeclaredField("b");
+            fieldA.setAccessible(true);
+            fieldA.set(packet, tabHeader);
+            Field fieldB = packet.getClass().getDeclaredField("b");
+            fieldB.setAccessible(true);
+            fieldB.set(packet, tabFooter);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            System.out.println("[Facility] Error while set PacketPlayOutPlayerListHeaderFooter [Version: 1_13_R2]");
+        } finally {
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+        }
     }
 
     @Override

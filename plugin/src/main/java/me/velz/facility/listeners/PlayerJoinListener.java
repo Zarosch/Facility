@@ -29,6 +29,8 @@ public class PlayerJoinListener implements Listener {
             }
         }
         Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasMetadata("vanish"))).forEachOrdered((all) -> {
+            plugin.getVersion().hidePlayer(all, event.getPlayer());
+            plugin.getVersion().showPlayer(all, event.getPlayer());
             plugin.getVersion().hidePlayer(event.getPlayer(), all);
         });
         plugin.getVersion().setTablist(event.getPlayer(), MessageUtil.SERVER_TABLIST_HEADER.getLocal(), MessageUtil.SERVER_TABLIST_FOOTER.getLocal());

@@ -35,7 +35,6 @@ public class Version_1_8_R3 implements Version {
         IChatBaseComponent tabFooter = IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + footer + "\"}");
 
         PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter(tabHeader);
-
         try {
             Field field = packet.getClass().getDeclaredField("b");
             field.setAccessible(true);

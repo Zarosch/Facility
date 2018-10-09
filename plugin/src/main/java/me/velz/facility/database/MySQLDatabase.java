@@ -15,6 +15,7 @@ import lombok.Setter;
 import me.velz.facility.Facility;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 public class MySQLDatabase {
 
@@ -51,6 +52,7 @@ public class MySQLDatabase {
         loadWarps();
     }
 
+    //<editor-fold defaultstate="collapsed" desc="createTables()">
     public final void createTables() {
         Connection connection = null;
         Statement statement = null;
@@ -60,7 +62,7 @@ public class MySQLDatabase {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + prefix + "players (uuid VARCHAR(36), name VARCHAR(16), permissionGroup VARCHAR(25), money DOUBLE, token DOUBLE, playtime BIGINT, firstJoin BIGINT, lastJoin BIGINT, ban VARCHAR(100), mute VARCHAR(100), prefix VARCHAR(100), suffix VARCHAR(100), UNIQUE KEY (uuid))");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + prefix + "warps (name VARCHAR(32), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (name))");
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + prefix + "homes (id int NOT NULL AUTO_INCREMENT, name VARCHAR(32), uuid VARCHAR(36), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (id))");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + prefix + "permissions (id int NOT NULL AUTO_INCREMENT, uuid VARCHAR(36), permission VARCHAR(100), UNIQUE KEY (id))");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + prefix + "kits_cooldown (id int NOT NULL AUTO_INCREMENT, uuid VARCHAR(36), kit VARCHAR(100), expired BIGINT, UNIQUE KEY (id))");
         } catch (SQLException ex) {
             Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -77,6 +79,8 @@ public class MySQLDatabase {
         }
     }
 
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="loadWarps()">
     public final void loadWarps() {
         Connection connection = null;
         PreparedStatement ps = null;
@@ -105,7 +109,10 @@ public class MySQLDatabase {
             }
         }
     }
+    //</editor-fold>
 
+    // Database Player
+    //<editor-fold defaultstate="collapsed" desc="insertUser(uuid, name)">
     public final void insertUser(String uuid, String name) {
         Connection connection = null;
         PreparedStatement ps = null;
@@ -139,6 +146,8 @@ public class MySQLDatabase {
         }
     }
 
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="getUser(uuid)">
     public final DatabasePlayer getUser(String uuid) {
         String uid = uuid;
         if (uuid.length() <= 16) {
@@ -154,6 +163,8 @@ public class MySQLDatabase {
         return dbPlayer;
     }
 
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="loadUser(uuid, name)">
     public final DatabasePlayer loadUser(String uuid, String name) {
         final DatabasePlayer dbPlayer = new DatabasePlayer(uuid, name);
         Connection connection = null;
@@ -217,6 +228,8 @@ public class MySQLDatabase {
         return dbPlayer;
     }
 
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="saveUser(uuid, dbPlayer)">
     public final void saveUser(String uuid, DatabasePlayer dbPlayer) {
         Connection connection = null;
         PreparedStatement ps = null;
@@ -250,6 +263,8 @@ public class MySQLDatabase {
         }
     }
 
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="issetUser(uuid)">
     public final boolean issetUser(String uuid) {
         Connection connection = null;
         PreparedStatement ps = null;
@@ -283,6 +298,8 @@ public class MySQLDatabase {
         return false;
     }
 
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="getUUID(name)">
     public final String getUUID(String name) {
         Connection connection = null;
         PreparedStatement ps = null;
@@ -316,6 +333,8 @@ public class MySQLDatabase {
         return null;
     }
 
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="getName(uuid)">
     public final String getName(String uuid) {
         Connection connection = null;
         PreparedStatement ps = null;
@@ -348,7 +367,10 @@ public class MySQLDatabase {
         }
         return null;
     }
+    //</editor-fold>
 
+    // Homes
+    //<editor-fold defaultstate="collapsed" desc="addHome(uuid, name, loc)">
     public final void addHome(String uuid, String name, Location loc) {
         Connection connection = null;
         PreparedStatement ps = null;
@@ -381,6 +403,8 @@ public class MySQLDatabase {
         }
     }
 
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="deleteHome(uuid, name)">
     public final void deleteHome(String uuid, String name) {
         Connection connection = null;
         PreparedStatement ps = null;
@@ -406,7 +430,10 @@ public class MySQLDatabase {
             }
         }
     }
+    //</editor-fold>
 
+    // Money
+    //<editor-fold defaultstate="collapsed" desc="moneyToplist()">
     public final HashMap<String, Double> moneyToplist() {
         HashMap<String, Double> toplist = new HashMap();
         final String query = "SELECT * FROM " + this.getPrefix() + "players ORDER BY money DESC LIMIT 20";
@@ -440,6 +467,8 @@ public class MySQLDatabase {
         return toplist;
     }
 
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="tokenToplist()">
     public final HashMap<String, Double> tokenToplist() {
         HashMap<String, Double> toplist = new HashMap();
         final String query = "SELECT * FROM " + this.getPrefix() + "players ORDER BY token DESC LIMIT 20";
@@ -472,5 +501,138 @@ public class MySQLDatabase {
         }
         return toplist;
     }
+    //</editor-fold>
+
+    // Kits
+    //<editor-fold defaultstate="collapsed" desc="issetKitCooldown(uuid, kit)">
+    public final boolean issetKitCooldown(String uuid, String kit) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String query = "SELECT * FROM " + this.getPrefix() + "kits_cooldown WHERE uuid = ? and kit = ?";
+            connection = this.getHikari().getConnection();
+            ps = connection.prepareStatement(query);
+            ps.setString(1, uuid);
+            ps.setString(2, kit);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabasePlayer.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(DatabasePlayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
+    }
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="isKitCooldownExpired(player, kit)">
+    public final boolean isKitCooldownExpired(Player player, String kit) {
+        final String query = "SELECT * FROM " + this.getPrefix() + "kits_cooldown WHERE kit = ? and uuid = ?";
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            connection = this.getHikari().getConnection();
+            ps = connection.prepareStatement(query);
+            ps.setString(1, kit);
+            ps.setString(2, player.getUniqueId().toString());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Long expired = rs.getLong("expired");
+                if (expired >= System.currentTimeMillis()) {
+                    return false;
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return true;
+    }
+
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="insertKitCooldown(uuid, kit, expired)">
+    public final void insertKitCooldown(String uuid, String kit, Integer expired) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        try {
+            String query = "INSERT INTO " + this.getPrefix() + "kits_cooldown (uuid, kit, expired) VALUES (?, ?, ?)";
+            connection = this.getHikari().getConnection();
+            ps = connection.prepareStatement(query);
+            ps.setString(1, uuid);
+            ps.setString(2, kit);
+            ps.setLong(3, System.currentTimeMillis() + expired);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabasePlayer.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(DatabasePlayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    //</editor-fold>
+    //<editor-fold defaultstate="collapsed" desc="updateKitCooldown(uuid, kit, expired)">
+    public final void updateKitCooldown(String uuid, String kit, Integer expired) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        try {
+            String query = "UPDATE " + this.getPrefix() + "kits_cooldown SET expired=? WHERE uuid = ?";
+            connection = this.getHikari().getConnection();
+            ps = connection.prepareStatement(query);
+            ps.setLong(1, expired + System.currentTimeMillis());
+            ps.setString(2, uuid);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabasePlayer.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(DatabasePlayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    //</editor-fold>
+    
 
 }

@@ -7,8 +7,10 @@ import me.velz.facility.commands.BlockPhysicsCommand;
 import me.velz.facility.commands.BroadcastCommand;
 import me.velz.facility.commands.ClearChatCommand;
 import me.velz.facility.commands.ClearinvCommand;
+import me.velz.facility.commands.CreateKitCommand;
 import me.velz.facility.commands.DelHomeCommand;
 import me.velz.facility.commands.DelWarpCommand;
+import me.velz.facility.commands.DeleteKitCommand;
 import me.velz.facility.commands.EnchantmentTableCommand;
 import me.velz.facility.commands.EnderChestCommand;
 import me.velz.facility.commands.FacilityCommand;
@@ -25,6 +27,7 @@ import me.velz.facility.commands.HomeListCommand;
 import me.velz.facility.commands.JumpCommand;
 import me.velz.facility.commands.KickCommand;
 import me.velz.facility.commands.KillCommand;
+import me.velz.facility.commands.KitCommand;
 import me.velz.facility.commands.LevelCommand;
 import me.velz.facility.commands.MoneyCommand;
 import me.velz.facility.commands.MoreCommand;
@@ -83,6 +86,7 @@ import me.velz.facility.listeners.PlayerQuitListener;
 import me.velz.facility.listeners.PlayerRespawnListener;
 import me.velz.facility.listeners.ServerListPingListener;
 import me.velz.facility.listeners.SignChangeListener;
+import me.velz.facility.objects.FacilityKit;
 import me.velz.facility.utils.FileManager;
 import me.velz.facility.utils.MessageUtil;
 import me.velz.facility.utils.Tools;
@@ -113,6 +117,9 @@ public class Facility extends JavaPlugin {
 
     @Getter
     private final HashMap<String, DatabaseWarp> warps = new HashMap();
+    
+    @Getter
+    private final HashMap<String, FacilityKit> kits = new HashMap();
     
     @Getter
     private final VersionMatcher versionMatcher = new VersionMatcher();
@@ -219,6 +226,9 @@ public class Facility extends JavaPlugin {
         getCommand("night").setExecutor(new TimeCommand());
         getCommand("sun").setExecutor(new WeatherCommand());
         getCommand("rain").setExecutor(new WeatherCommand());
+        getCommand("kit").setExecutor(new KitCommand(this));
+        getCommand("createkit").setExecutor(new CreateKitCommand(this));
+        getCommand("deletekit").setExecutor(new DeleteKitCommand(this));
     }
 
     private void schedul() {

@@ -168,3 +168,12 @@ commands:
         aliases: [token]
     pay:
         description: Pay Command
+    kit:
+        description: Kit Command
+        aliases: [kits]
+    createkit:
+        description: Createkit Command
+        aliases: [addkit]
+    deletekit:
+        description: Deletekit Command
+        aliases: [delkit, removekit]

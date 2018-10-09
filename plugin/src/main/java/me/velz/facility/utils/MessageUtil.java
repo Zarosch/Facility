@@ -224,8 +224,16 @@ public enum MessageUtil {
     PUNISH_NOTBANNED("§cDieser Spieler ist nicht gebannt."),
     PUNISH_NOTMUTED("§cDieser Spieler ist nicht gemutet."),
     PUNISH_MUTED_MESSAGE("§r\n§cDu wurdest vom Chat ausgeschlossen.\n§cVerbleibende Zeit:§e %time\n§cGrund:§e %reason\n§r"),
+    KIT_GIVEKIT("§6Du hast dir das Kit §e%kit §6gegeben."),
+    KIT_NOTFOUND("§cDieses Kit konnte nicht gefunden werden."),
+    KIT_LIST("§6Alle verfügbaren Kits: §7%kits"),
+    KIT_NOKITS("§cEs wurden noch keine Kits erstellt."),
+    KIT_CREATE("§6Du hast das Kit §e%kit §6erstellt."),
+    KIT_DELETE("§6Du hast das Kit §e%kit §6gelöscht."),
+    KIT_NOTREADY("§cDu kannst das Kit noch nicht erneut nutzen."),
+    KIT_ALREADYEXIST("§cEs gibt bereits ein Kit mit diesem namen."),
     FACILITY_HELP_HEADER("§6Facility Management"),
-    FACILITY_HELP_RELOAD("§6/facility reload §7Alle Konfigurationen neuladen"),
+    FACILITY_HELP_RELOAD("§6/facility reload §f➡ §7Alle Konfigurationen neuladen"),
     FACILITY_RELOAD("§6Alle Konfigurationen wurden neugeladen.");
 
     @Getter

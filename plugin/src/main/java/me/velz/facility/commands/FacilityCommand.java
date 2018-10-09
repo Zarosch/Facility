@@ -22,8 +22,9 @@ public class FacilityCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.FACILITY_HELP_HEADER.getLocal());
+            cs.sendMessage(" ");
             cs.sendMessage(MessageUtil.FACILITY_HELP_RELOAD.getLocal());
+            cs.sendMessage(" ");
             return true;
         }
         if (args[0].equalsIgnoreCase("reload")) {

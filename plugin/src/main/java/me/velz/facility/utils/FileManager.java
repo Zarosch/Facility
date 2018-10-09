@@ -65,19 +65,23 @@ public class FileManager {
         this.getConfig().getConfiguration().getConfigurationSection("serverlist.motd").getKeys(false).forEach((motd) -> {
             motds.add(ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("serverlist.motd." + motd)));
         });
-        
+
         // Kits
-        for(String kit : this.getKits().getConfiguration().getConfigurationSection("kits").getKeys(false)) {
-            final ArrayList<ItemStack> items = new ArrayList<>();
-            String cooldown = this.getKits().getString("kits." + kit + ".cooldown");
-            String permission = this.getKits().getString("kits." + kit + ".permission");
-            for(String item : this.getKits().getConfiguration().getConfigurationSection("kits." + kit + ".items").getKeys(false)) {
-                items.add(this.getKits().getItemStack("kits." + kit + ".items." + item));
+        for (String kit : this.getKits().getConfiguration().getConfigurationSection("kits").getKeys(false)) {
+            try {
+                final ArrayList<ItemStack> items = new ArrayList<>();
+                String cooldown = this.getKits().getString("kits." + kit + ".cooldown");
+                String permission = this.getKits().getString("kits." + kit + ".permission");
+                for (String item : this.getKits().getConfiguration().getConfigurationSection("kits." + kit + ".items").getKeys(false)) {
+                    items.add(this.getKits().getItemStack("kits." + kit + ".items." + item));
+                }
+                final FacilityKit facilityKit = new FacilityKit(kit.toLowerCase(), cooldown, permission, items);
+                Facility.getInstance().getKits().put(kit.toLowerCase(), facilityKit);
+            } catch (NullPointerException ex) {
+                System.out.println("[Facility] Error! Kit [" + kit + "] cannot be loaded.");
             }
-            final FacilityKit facilityKit = new FacilityKit(kit.toLowerCase(), cooldown, permission, items);
-            Facility.getInstance().getKits().put(kit.toLowerCase(), facilityKit);
         }
-        
+
         // Spawn
         this.getSpawn().load();
         Bukkit.getScheduler().runTaskLater(Facility.getInstance(), () -> {

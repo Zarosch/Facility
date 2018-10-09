@@ -136,7 +136,6 @@ public class MoneyCommand implements CommandExecutor {
                 @Override
                 public void run() {
                     int i = 1;
-
                     final String query = "SELECT * FROM " + plugin.getMysqlDatabase().getPrefix() + "players ORDER BY money DESC LIMIT 20";
                     Connection connection = null;
                     PreparedStatement ps = null;

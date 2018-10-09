@@ -23,6 +23,8 @@ public class JumpCommand implements CommandExecutor {
             return true;
         }
         loc.setY(loc.getY() + 1);
+        loc.setPitch(player.getLocation().getPitch());
+        loc.setYaw(player.getLocation().getYaw());
         player.teleport(loc);
         return true;
     }

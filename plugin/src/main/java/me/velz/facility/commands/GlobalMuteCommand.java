@@ -19,12 +19,12 @@ public class GlobalMuteCommand implements CommandExecutor {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
-        if (this.isGlobalMute()) {
+        if (isGlobalMute()) {
             Bukkit.broadcastMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.CHAT_GLOBALMUTE_OFF.getLocal().replaceAll("%player", cs.getName()));
-            this.setGlobalMute(false);
+            setGlobalMute(false);
         } else {
             Bukkit.broadcastMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.CHAT_GLOBALMUTE_ON.getLocal().replaceAll("%player", cs.getName()));
-            this.setGlobalMute(true);
+            setGlobalMute(true);
         }
         return true;
     }

@@ -22,7 +22,7 @@ public class SetWarpCommand implements CommandExecutor {
     public SetWarpCommand(Facility plugin) {
         this.plugin = plugin;
     }
-    
+
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
         if (!cs.hasPermission("facility.command.setwarp")) {
@@ -40,8 +40,6 @@ public class SetWarpCommand implements CommandExecutor {
         if (cs instanceof Player) {
             Player player = (Player) cs;
             DatabaseWarp warp = new DatabaseWarp(args[0], player.getLocation());
-
-            plugin.getWarps().put(args[0], warp);
             Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
                 Connection connection = null;
                 PreparedStatement ps = null;
@@ -93,6 +91,7 @@ public class SetWarpCommand implements CommandExecutor {
                     } catch (SQLException ex) {
                         Logger.getLogger(SetWarpCommand.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    plugin.getWarps().put(args[0], warp);
                 }
             });
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_SET.getLocal().replaceAll("%warp", args[0]));

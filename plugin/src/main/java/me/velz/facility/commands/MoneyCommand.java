@@ -16,13 +16,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class MoneyCommand implements CommandExecutor {
-    
+
     private final Facility plugin;
 
     public MoneyCommand(Facility plugin) {
         this.plugin = plugin;
     }
-    
+
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
         if (!cs.hasPermission("facility.command.money")) {
@@ -132,39 +132,45 @@ public class MoneyCommand implements CommandExecutor {
                 return true;
             }
             cs.sendMessage(MessageUtil.MONEY_PREFIX.getLocal() + MessageUtil.MONEY_BALANCETOP_HEADER.getLocal());
-            int i = 1;
-            final String query = "SELECT * FROM " + plugin.getMysqlDatabase().getPrefix() + "players ORDER BY money DESC LIMIT 20";
-            Connection connection = null;
-            PreparedStatement ps = null;
-            ResultSet rs = null;
-            try {
-                connection = plugin.getMysqlDatabase().getHikari().getConnection();
-                ps = connection.prepareStatement(query);
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    cs.sendMessage(MessageUtil.MONEY_BALANCETOP_ENTRY.getLocal()
-                            .replaceAll("%player", rs.getString("name"))
-                            .replaceAll("%place", String.valueOf(i))
-                            .replaceAll("%money", String.valueOf(rs.getInt("money")) + " " + MessageUtil.MONEYNAME.getLocal()));
-                    i++;
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    int i = 1;
+
+                    final String query = "SELECT * FROM " + plugin.getMysqlDatabase().getPrefix() + "players ORDER BY money DESC LIMIT 20";
+                    Connection connection = null;
+                    PreparedStatement ps = null;
+                    ResultSet rs = null;
+                    try {
+                        connection = plugin.getMysqlDatabase().getHikari().getConnection();
+                        ps = connection.prepareStatement(query);
+                        rs = ps.executeQuery();
+                        while (rs.next()) {
+                            cs.sendMessage(MessageUtil.MONEY_BALANCETOP_ENTRY.getLocal()
+                                    .replaceAll("%player", rs.getString("name"))
+                                    .replaceAll("%place", String.valueOf(i))
+                                    .replaceAll("%money", String.valueOf(rs.getInt("money")) + " " + MessageUtil.MONEYNAME.getLocal()));
+                            i++;
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(MoneyCommand.class.getName()).log(Level.SEVERE, null, ex);
+                    } finally {
+                        try {
+                            if (connection != null) {
+                                connection.close();
+                            }
+                            if (ps != null) {
+                                ps.close();
+                            }
+                            if (rs != null) {
+                                rs.close();
+                            }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(MoneyCommand.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
                 }
-            } catch (SQLException ex) {
-                Logger.getLogger(MoneyCommand.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                try {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                    if (ps != null) {
-                        ps.close();
-                    }
-                    if (rs != null) {
-                        rs.close();
-                    }
-                } catch (SQLException ex) {
-                    Logger.getLogger(MoneyCommand.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            });
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="/money set">
         } else if (args[0].equalsIgnoreCase("set")) {

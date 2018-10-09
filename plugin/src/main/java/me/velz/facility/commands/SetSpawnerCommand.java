@@ -27,7 +27,7 @@ public class SetSpawnerCommand implements CommandExecutor {
         }
         Player player = (Player) cs;
         Set<Material> set = new HashSet<>(Arrays.asList(Material.MOB_SPAWNER));
-        Block target = player.getTargetBlock(set, 20);
+        Block target = player.getTargetBlock(null, 20);
         if (target == null) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_SETSPAWNER_TARGET.getLocal());
             return true;
@@ -39,6 +39,7 @@ public class SetSpawnerCommand implements CommandExecutor {
         if (EntityType.valueOf(args[0]) != null) {
             CreatureSpawner creature = (CreatureSpawner) target.getState();
             creature.setSpawnedType(EntityType.valueOf(args[0]));
+            creature.update();
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_SETSPAWNER_CHANGED.getLocal());
         } else {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_SETSPAWNER_TYPE.getLocal());

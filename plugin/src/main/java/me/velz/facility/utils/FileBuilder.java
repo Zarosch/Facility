@@ -185,14 +185,19 @@ public class FileBuilder {
             if (Facility.getInstance().getVersion().isUnbreakable(stack)) {
                 this.configuration.set(path + ".meta.unbreakable", true);
             }
-            LeatherArmorMeta armorMeta = (LeatherArmorMeta) stack.getItemMeta();
-            if (armorMeta.getColor() != null) {
-                this.configuration.set(path + ".meta.armorColor", armorMeta.getColor().asRGB());
+            if (stack.getType() == Material.LEATHER_BOOTS || stack.getType() == Material.LEATHER_CHESTPLATE
+                    || stack.getType() == Material.LEATHER_HELMET || stack.getType() == Material.LEATHER_LEGGINGS) {
+                LeatherArmorMeta armorMeta = (LeatherArmorMeta) stack.getItemMeta();
+                if (armorMeta.getColor() != null) {
+                    this.configuration.set(path + ".meta.armorColor", armorMeta.getColor().asRGB());
+                }
             }
 
-            SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
-            if (Facility.getInstance().getVersion().getSkullOwner(skullMeta) != null) {
-                this.configuration.set(path + ".meta.owningPlayer", Facility.getInstance().getVersion().getSkullOwner(skullMeta));
+            if (stack.getType() == Material.SKULL_ITEM || stack.getType() == Material.SKULL) {
+                SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
+                if (Facility.getInstance().getVersion().getSkullOwner(skullMeta) != null) {
+                    this.configuration.set(path + ".meta.owningPlayer", Facility.getInstance().getVersion().getSkullOwner(skullMeta));
+                }
             }
         }
         if (stack.getEnchantments() != null) {

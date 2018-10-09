@@ -141,7 +141,7 @@ public enum MessageUtil {
     MISC_BLOCKPHYSICS_ON("§6Du hast Block Physics §eaktiviert§6."),
     MISC_BLOCKPHYSICS_OFF("§6Du hast Block Physics §edeaktiviert§6."),
     MISC_SETSPAWNER_TARGET("§cBitte schaue einen Spawner an."),
-    MISC_SETSPAWNER_CHANGED("§6Der Spawner spawnt nun §e%type §6."),
+    MISC_SETSPAWNER_CHANGED("§6Der Spawner spawnt nun §e%type§6."),
     MISC_SETSPAWNER_TYPE("§cBitte verwende einen gültigen EntityType."),
     MONEY_PREFIX("§7┃ §3Münzen §7┃ "),
     MONEY_BALANCE_SELF("§6Du trägst §e%money %moneyname§6 bei dir."),

@@ -36,11 +36,11 @@ public class SetSpawnerCommand implements CommandExecutor {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_SETSPAWNER_TARGET.getLocal());
             return true;
         }
-        if (EntityType.valueOf(args[0]) != null) {
+        if (EntityType.valueOf(args[0].toUpperCase()) != null) {
             CreatureSpawner creature = (CreatureSpawner) target.getState();
-            creature.setSpawnedType(EntityType.valueOf(args[0]));
+            creature.setSpawnedType(EntityType.valueOf(args[0].toUpperCase()));
             creature.update();
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_SETSPAWNER_CHANGED.getLocal());
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_SETSPAWNER_CHANGED.getLocal().replaceAll("%type", creature.getType().toString()));
         } else {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_SETSPAWNER_TYPE.getLocal());
             return true;

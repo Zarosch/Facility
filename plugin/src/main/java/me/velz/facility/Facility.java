@@ -152,7 +152,7 @@ public class Facility extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerRespawnListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ServerListPingListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new SignChangeListener(), this);
+        Bukkit.getPluginManager().registerEvents(new SignChangeListener(this), this);
     }
 
     private void loadCommands() {

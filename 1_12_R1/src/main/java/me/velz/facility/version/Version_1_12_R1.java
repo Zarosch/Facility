@@ -6,6 +6,7 @@ import net.minecraft.server.v1_12_R1.EntityPlayer;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import net.minecraft.server.v1_12_R1.PacketPlayOutPlayerListHeaderFooter;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -107,6 +108,26 @@ public class Version_1_12_R1 implements Version {
     @Override
     public Location getTargetBlock(Player player, Integer distance) {
         return player.getTargetBlock(null, distance).getLocation();
+    }
+
+    @Override
+    public Material getMaterial(String material) {
+        if(material.equalsIgnoreCase("MOB_SPAWNER")) {
+            return Material.MOB_SPAWNER;
+        }
+        if(material.equalsIgnoreCase("SKULL_ITEM")) {
+            return Material.SKULL_ITEM;
+        }
+        if(material.equalsIgnoreCase("SKULL")) {
+            return Material.SKULL;
+        }
+        if(material.equalsIgnoreCase("SIGN_POST")) {
+            return Material.SIGN_POST;
+        }
+        if(material.equalsIgnoreCase("STONE_SPADE")) {
+            return Material.STONE_SPADE;
+        }
+        return null;
     }
 
 }

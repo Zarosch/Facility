@@ -21,7 +21,7 @@ public class PlayerInteractListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            if (event.getClickedBlock().getType() == Material.SIGN || event.getClickedBlock().getType() == Material.SIGN_POST) {
+            if (event.getClickedBlock().getType() == Material.SIGN || event.getClickedBlock().getType() == plugin.getVersion().getMaterial("SIGN_POST")) {
                 Sign sign = (Sign) event.getClickedBlock().getState();
                 if (sign.getLine(1).equalsIgnoreCase("§8[§1Warp§8]")) {
                     String warp = sign.getLine(2);

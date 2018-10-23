@@ -122,7 +122,7 @@ public class FileManager {
             this.getKits().addDefault("kits.default.items.sword", new ItemBuilder().setMaterial(Material.IRON_SWORD).build());
             this.getKits().addDefault("kits.default.items.pickaxe", new ItemBuilder().setMaterial(Material.STONE_PICKAXE).build());
             this.getKits().addDefault("kits.default.items.axe", new ItemBuilder().setMaterial(Material.STONE_AXE).build());
-            this.getKits().addDefault("kits.default.items.shovel", new ItemBuilder().setMaterial(Material.STONE_SPADE).build());
+            this.getKits().addDefault("kits.default.items.shovel", new ItemBuilder().setMaterial(Facility.getInstance().getVersion().getMaterial("STONE_SPADE")).build());
             this.getKits().save();
         }
     }

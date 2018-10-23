@@ -51,7 +51,7 @@ public class Version_1_8_R3 implements Version {
         if (sound.equalsIgnoreCase("BLOCK_NOTE_BELL")) {
             return Sound.valueOf("NOTE_PLING");
         }
-        if(sound.equalsIgnoreCase("BLOCK_NOTE_PLING")) {
+        if (sound.equalsIgnoreCase("BLOCK_NOTE_PLING")) {
             return Sound.valueOf("NOTE_PLING");
         }
         return null;
@@ -107,7 +107,27 @@ public class Version_1_8_R3 implements Version {
 
     @Override
     public Location getTargetBlock(Player player, Integer distance) {
-        return player.getTargetBlock((Set<Material>)null, 32).getLocation();
+        return player.getTargetBlock((Set<Material>) null, 32).getLocation();
+    }
+
+    @Override
+    public Material getMaterial(String material) {
+        if (material.equalsIgnoreCase("MOB_SPAWNER")) {
+            return Material.MOB_SPAWNER;
+        }
+        if (material.equalsIgnoreCase("SKULL_ITEM")) {
+            return Material.SKULL_ITEM;
+        }
+        if (material.equalsIgnoreCase("SKULL")) {
+            return Material.SKULL;
+        }
+        if (material.equalsIgnoreCase("SIGN_POST")) {
+            return Material.WALL_SIGN;
+        }
+        if (material.equalsIgnoreCase("STONE_SPADE")) {
+            return Material.STONE_SPADE;
+        }
+        return null;
     }
 
 }

@@ -194,9 +194,9 @@ public class Facility extends JavaPlugin {
         getCommand("seen").setExecutor(new SeenCommand(this));
         getCommand("sethome").setExecutor(new SetHomeCommand(this));
         getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
-        getCommand("setspawner").setExecutor(new SetSpawnerCommand());
+        getCommand("setspawner").setExecutor(new SetSpawnerCommand(this));
         getCommand("setwarp").setExecutor(new SetWarpCommand(this));
-        getCommand("skull").setExecutor(new SkullCommand());
+        getCommand("skull").setExecutor(new SkullCommand(this));
         getCommand("socialspy").setExecutor(new SocialspyCommand());
         getCommand("spawn").setExecutor(new SpawnCommand(this));
         getCommand("spawnmob").setExecutor(new SpawnMobCommand());

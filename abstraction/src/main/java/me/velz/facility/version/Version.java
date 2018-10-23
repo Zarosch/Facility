@@ -2,6 +2,7 @@ package me.velz.facility.version;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -37,5 +38,7 @@ public interface Version {
     public Integer getPing(Player player);
     
     public Location getTargetBlock(Player player, Integer distance);
+    
+    public Material getMaterial(String material);
     
 }

@@ -1,10 +1,7 @@
 package me.velz.facility.commands;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.command.Command;
@@ -15,6 +12,12 @@ import org.bukkit.entity.Player;
 
 public class SetSpawnerCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public SetSpawnerCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
         if (!cs.hasPermission("facility.command.setspawner")) {
@@ -26,13 +29,12 @@ public class SetSpawnerCommand implements CommandExecutor {
             return true;
         }
         Player player = (Player) cs;
-        Set<Material> set = new HashSet<>(Arrays.asList(Material.MOB_SPAWNER));
         Block target = player.getTargetBlock(null, 20);
         if (target == null) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_SETSPAWNER_TARGET.getLocal());
             return true;
         }
-        if (target.getType() != Material.MOB_SPAWNER) {
+        if (target.getType() != plugin.getVersion().getMaterial("MOB_SPAWNER")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MISC_SETSPAWNER_TARGET.getLocal());
             return true;
         }

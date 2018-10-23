@@ -193,7 +193,7 @@ public class FileBuilder {
                 }
             }
 
-            if (stack.getType() == Material.SKULL_ITEM || stack.getType() == Material.SKULL) {
+            if (stack.getType() == Facility.getInstance().getVersion().getMaterial("SKULL_ITEM") || stack.getType() == Facility.getInstance().getVersion().getMaterial("SKULL")) {
                 SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
                 if (Facility.getInstance().getVersion().getSkullOwner(skullMeta) != null) {
                     this.configuration.set(path + ".meta.owningPlayer", Facility.getInstance().getVersion().getSkullOwner(skullMeta));

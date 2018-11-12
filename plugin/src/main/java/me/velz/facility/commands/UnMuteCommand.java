@@ -30,7 +30,7 @@ public class UnMuteCommand implements CommandExecutor {
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[0]);
+            DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
             if (!dbPlayer.isSuccess()) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_PLAYERNOTFOUND.getLocal());
             } else if (dbPlayer.getMute().equalsIgnoreCase("OK")) {
@@ -43,7 +43,7 @@ public class UnMuteCommand implements CommandExecutor {
                 Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.unmute") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.commands.unmute"))).forEachOrdered((all) -> {
                     Facility.getInstance().getVersion().sendComponentMessage(all, component);
                 });
-                cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_UNBAN.getLocal());
+                cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_UNMUTE.getLocal());
             }
         });
         return true;

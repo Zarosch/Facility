@@ -41,17 +41,14 @@ public class DelWarpCommand implements CommandExecutor {
             Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    Connection connection = null;
-                    PreparedStatement ps = null;
-                    ResultSet rs = null;
+                    Connection connection = plugin.getDatabase().getConnection();
                     try {
-                        connection = plugin.getMysqlDatabase().getHikari().getConnection();
-                        String query = "SELECT * FROM " + plugin.getMysqlDatabase().getPrefix() + "warps WHERE name = ?";
-                        ps = connection.prepareStatement(query);
+                        String query = "SELECT * FROM warps WHERE name = ?";
+                        PreparedStatement ps = plugin.getDatabase().getConnection().prepareStatement(query);
                         ps.setString(1, args[0]);
-                        rs = ps.executeQuery();
+                        ResultSet rs = ps.executeQuery();
                         if (rs.next()) {
-                            query = "DELETE FROM " + plugin.getMysqlDatabase().getPrefix() + "warps WHERE name = ?";
+                            query = "DELETE FROM warps WHERE name = ?";
                             ps = connection.prepareStatement(query);
                             ps.setString(1, args[0]);
                             ps.executeUpdate();
@@ -59,20 +56,6 @@ public class DelWarpCommand implements CommandExecutor {
                         }
                     } catch (SQLException ex) {
                         Logger.getLogger(DelWarpCommand.class.getName()).log(Level.SEVERE, null, ex);
-                    } finally {
-                        try {
-                            if (connection != null) {
-                                connection.close();
-                            }
-                            if (ps != null) {
-                                ps.close();
-                            }
-                            if (rs != null) {
-                                rs.close();
-                            }
-                        } catch (SQLException ex) {
-                            Logger.getLogger(DelWarpCommand.class.getName()).log(Level.SEVERE, null, ex);
-                        }
                     }
                 }
             });

@@ -17,7 +17,7 @@ public class PlaceHolderAPI extends EZPlaceholderHook {
     @Override
     public String onPlaceholderRequest(Player player, String identifier) {
         if (player != null) {
-            DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(player.getUniqueId().toString());
+            DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
             if (identifier.equals("money")) {
                 return String.valueOf((int)dbPlayer.getMoney());
             }

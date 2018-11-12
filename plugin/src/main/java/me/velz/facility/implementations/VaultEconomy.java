@@ -47,7 +47,7 @@ public class VaultEconomy implements Economy {
 
     @Override
     public boolean hasAccount(String playerName) {
-        DatabasePlayer dbPlayer = Facility.getInstance().getMysqlDatabase().getUser(playerName);
+        DatabasePlayer dbPlayer = Facility.getInstance().getDatabase().getUser(playerName);
         return dbPlayer.isSuccess();
     }
 
@@ -68,7 +68,7 @@ public class VaultEconomy implements Economy {
 
     @Override
     public double getBalance(String playerName) {
-        DatabasePlayer dbPlayer = Facility.getInstance().getMysqlDatabase().getUser(playerName);
+        DatabasePlayer dbPlayer = Facility.getInstance().getDatabase().getUser(playerName);
         return dbPlayer.getMoney();
     }
 
@@ -109,7 +109,7 @@ public class VaultEconomy implements Economy {
 
     @Override
     public EconomyResponse withdrawPlayer(String playerName, double d) {
-        DatabasePlayer dbPlayer = Facility.getInstance().getMysqlDatabase().getUser(playerName);
+        DatabasePlayer dbPlayer = Facility.getInstance().getDatabase().getUser(playerName);
         if(dbPlayer.isSuccess()) {
             dbPlayer.setMoney(dbPlayer.getMoney()-d);
             if(!dbPlayer.isOnline()){
@@ -137,7 +137,7 @@ public class VaultEconomy implements Economy {
 
     @Override
     public EconomyResponse depositPlayer(String playerName, double d) {
-        DatabasePlayer dbPlayer = Facility.getInstance().getMysqlDatabase().getUser(playerName);
+        DatabasePlayer dbPlayer = Facility.getInstance().getDatabase().getUser(playerName);
         if(dbPlayer.isSuccess()) {
             dbPlayer.setMoney(dbPlayer.getMoney()+d);
             if(!dbPlayer.isOnline()){

@@ -17,14 +17,14 @@ public class Implementations {
                 vault.setupChat();
                 vault.setupPermissions();
                 vault.setupEconomy();
-            } else {
-                System.out.println("[Facility] Vault was not found.");
             }
+        } else {
+            System.out.println("[Facility] Vault was not found.");
         }
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceHolderAPI")) {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new PlaceHolderAPI(Facility.getInstance(), "facility").hook();
         } else {
-            System.out.println("[Facility] PlaceHolderAPI was not found.");
+            System.out.println("[Facility] PlaceholderAPI was not found.");
         }
     }
 

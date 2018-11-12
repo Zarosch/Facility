@@ -27,7 +27,7 @@ public class SeenCommand implements CommandExecutor {
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[0]);
+            final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
             if (dbPlayer.isSuccess()) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_SEEN_HEADER.getLocal().replaceAll("%player", dbPlayer.getName()));
                 final String lastSeen;

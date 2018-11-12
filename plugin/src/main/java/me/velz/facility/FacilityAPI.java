@@ -1,5 +1,6 @@
 package me.velz.facility;
 
+import me.velz.facility.database.Database;
 import me.velz.facility.database.DatabasePlayer;
 import org.bukkit.entity.Player;
 
@@ -7,6 +8,10 @@ public class FacilityAPI {
 
     public static DatabasePlayer getDatabasePlayer(Player player) {
         return Facility.getInstance().getPlayers().get(player.getUniqueId().toString());
+    }
+    
+    public static Database getDatabase() {
+        return Facility.getInstance().getDatabase();
     }
     
     public static boolean hasTokens(Player player, Double tokens) {

@@ -51,7 +51,7 @@ public class PlayerKickListener implements Listener {
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (plugin.getPlayers().containsKey(event.getPlayer().getUniqueId().toString())) {
-                plugin.getMysqlDatabase().saveUser(event.getPlayer().getUniqueId().toString(), plugin.getPlayers().get(event.getPlayer().getUniqueId().toString()));
+                plugin.getDatabase().saveUser(event.getPlayer().getUniqueId().toString(), plugin.getPlayers().get(event.getPlayer().getUniqueId().toString()));
                 plugin.getPlayers().remove(event.getPlayer().getUniqueId().toString());
             }
         });

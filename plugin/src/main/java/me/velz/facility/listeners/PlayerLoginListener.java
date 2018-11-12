@@ -17,7 +17,7 @@ public class PlayerLoginListener implements Listener {
     
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event) {
-        final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(event.getPlayer().getUniqueId().toString());
+        final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(event.getPlayer().getUniqueId().toString());
         if (!dbPlayer.getBan().equalsIgnoreCase("OK")) {
             String[] banSplitter = dbPlayer.getBan().split(";");
             Long time = Long.valueOf(banSplitter[1]);

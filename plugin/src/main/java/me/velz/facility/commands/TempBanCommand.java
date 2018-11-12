@@ -31,7 +31,7 @@ public class TempBanCommand implements CommandExecutor {
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[0]);
+            DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
             if (!dbPlayer.isSuccess()) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_PLAYERNOTFOUND.getLocal());
             } else if (!dbPlayer.getBan().equalsIgnoreCase("OK")) {
@@ -44,7 +44,7 @@ public class TempBanCommand implements CommandExecutor {
                 Integer time = plugin.getTools().toMillis(args[1]);
                 reason = reason.substring(0, reason.length() - 1);
                 final String r = reason;
-                TextComponent component = new TextComponent(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_BANNED.getLocal().replaceAll("%reason", reason).replaceAll("%name", args[0]));
+                TextComponent component = new TextComponent(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_BANNEDBROADCAST.getLocal().replaceAll("%reason", reason).replaceAll("%name", args[0]));
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_BANNEDHOVER.getLocal().replaceAll("%punisher", cs.getName()).replaceAll("%time", args[1])).create()));
                 dbPlayer.setBan("BLOCKED;" + (time + System.currentTimeMillis()) + ";" + reason);
                 Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.ban") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.commands.ban"))).forEachOrdered((all) -> {

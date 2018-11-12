@@ -31,7 +31,7 @@ public class AsyncPlayerChatListener implements Listener {
             event.setMessage(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
         }
         event.setCancelled(true);
-        DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(event.getPlayer().getUniqueId().toString());
+        DatabasePlayer dbPlayer = plugin.getDatabase().getUser(event.getPlayer().getUniqueId().toString());
         if (!dbPlayer.getMute().equalsIgnoreCase("OK")) {
             final String[] data = dbPlayer.getMute().split(";");
             String duration;

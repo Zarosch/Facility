@@ -31,7 +31,7 @@ public class TempMuteCommand implements CommandExecutor {
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[0]);
+            DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
             if (!dbPlayer.isSuccess()) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_PLAYERNOTFOUND.getLocal());
             } else if (!dbPlayer.getMute().equalsIgnoreCase("OK")) {
@@ -44,7 +44,7 @@ public class TempMuteCommand implements CommandExecutor {
                 Integer time = plugin.getTools().toMillis(args[1]);
                 reason = reason.substring(0, reason.length() - 1);
                 final String r = reason;
-                TextComponent component = new TextComponent(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_MUTED.getLocal().replaceAll("%reason", reason).replaceAll("%name", args[0]));
+                TextComponent component = new TextComponent(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_MUTEDBROADCAST.getLocal().replaceAll("%reason", reason).replaceAll("%name", args[0]));
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_MUTEDHOVER.getLocal().replaceAll("%punisher", cs.getName()).replaceAll("%time", "Permanent")).create()));
                 dbPlayer.setBan("BLOCKED;" + (time + System.currentTimeMillis()) + ";" + reason);
                 Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.mute") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.commands.mute"))).forEachOrdered((all) -> {

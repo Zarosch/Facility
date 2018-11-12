@@ -46,16 +46,16 @@ public class KitCommand implements CommandExecutor {
             Player player = (Player) cs;
             if (!kit.getCooldown().equalsIgnoreCase("0")) {
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                    if (plugin.getMysqlDatabase().issetKitCooldown(player.getUniqueId().toString(), kitname)) {
-                        if (plugin.getMysqlDatabase().isKitCooldownExpired(player, kitname)) {
+                    if (plugin.getDatabase().issetKitCooldown(player.getUniqueId().toString(), kitname)) {
+                        if (plugin.getDatabase().isKitCooldownExpired(player, kitname)) {
                             kit.give(player);
-                            plugin.getMysqlDatabase().updateKitCooldown(player.getUniqueId().toString(), kitname, plugin.getTools().toMillis(kit.getCooldown()));
+                            plugin.getDatabase().updateKitCooldown(player.getUniqueId().toString(), kitname, plugin.getTools().toMillis(kit.getCooldown()));
                         } else {
                             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.KIT_NOTREADY.getLocal());
                         }
                     } else {
                         kit.give(player);
-                        plugin.getMysqlDatabase().insertKitCooldown(player.getUniqueId().toString(), kitname, plugin.getTools().toMillis(kit.getCooldown()));
+                        plugin.getDatabase().insertKitCooldown(player.getUniqueId().toString(), kitname, plugin.getTools().toMillis(kit.getCooldown()));
                     }
                 });
             } else {

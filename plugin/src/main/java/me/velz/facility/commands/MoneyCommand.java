@@ -37,7 +37,7 @@ public class MoneyCommand implements CommandExecutor {
             }
 
             final Player player = (Player) cs;
-            final double money = plugin.getMysqlDatabase().getUser(player.getUniqueId().toString()).getMoney();
+            final double money = plugin.getDatabase().getUser(player.getUniqueId().toString()).getMoney();
             String moneyString = String.valueOf(money);
             if (moneyString.contains(".")) {
                 String[] s = moneyString.split("\\.");
@@ -97,7 +97,7 @@ public class MoneyCommand implements CommandExecutor {
                 }
                 final double d = Double.valueOf(m);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                    final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(player.getUniqueId().toString());
+                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
                     double money = dbPlayer.getMoney();
                     if (money < d) {
                         cs.sendMessage(MessageUtil.MONEY_PREFIX.getLocal() + MessageUtil.MONEY_NOTENOUGH.getLocal());
@@ -110,7 +110,7 @@ public class MoneyCommand implements CommandExecutor {
                             if (target == player) {
                                 cs.sendMessage(MessageUtil.MONEY_PREFIX.getLocal() + MessageUtil.MONEY_PAY_SELF.getLocal());
                             } else {
-                                final DatabasePlayer dbTarget = plugin.getMysqlDatabase().getUser(target.getUniqueId().toString());
+                                final DatabasePlayer dbTarget = plugin.getDatabase().getUser(target.getUniqueId().toString());
                                 double targetMoney = dbTarget.getMoney();
                                 targetMoney = targetMoney + d;
                                 dbPlayer.setMoney(money);
@@ -136,12 +136,12 @@ public class MoneyCommand implements CommandExecutor {
                 @Override
                 public void run() {
                     int i = 1;
-                    final String query = "SELECT * FROM " + plugin.getMysqlDatabase().getPrefix() + "players ORDER BY money DESC LIMIT 20";
+                    final String query = "SELECT * FROM players ORDER BY money DESC LIMIT 20";
                     Connection connection = null;
                     PreparedStatement ps = null;
                     ResultSet rs = null;
                     try {
-                        connection = plugin.getMysqlDatabase().getHikari().getConnection();
+                        connection = plugin.getDatabase().getConnection();
                         ps = connection.prepareStatement(query);
                         rs = ps.executeQuery();
                         while (rs.next()) {
@@ -188,7 +188,7 @@ public class MoneyCommand implements CommandExecutor {
             try {
                 final Double d = Double.valueOf(s);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                    final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[1]);
+                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[1]);
                     if (dbPlayer.isSuccess()) {
                         dbPlayer.setMoney(d);
                         if (!dbPlayer.isOnline()) {
@@ -221,7 +221,7 @@ public class MoneyCommand implements CommandExecutor {
             try {
                 final Double d = Double.valueOf(s);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                    final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[1]);
+                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[1]);
                     if (dbPlayer.isSuccess()) {
                         dbPlayer.setMoney(dbPlayer.getMoney() + d);
                         if (!dbPlayer.isOnline()) {
@@ -255,7 +255,7 @@ public class MoneyCommand implements CommandExecutor {
             try {
                 final Double d = Double.valueOf(s);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                    final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[1]);
+                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[1]);
                     if (dbPlayer.isSuccess()) {
                         dbPlayer.setMoney(dbPlayer.getMoney() - d);
                         if (!dbPlayer.isOnline()) {
@@ -277,11 +277,11 @@ public class MoneyCommand implements CommandExecutor {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }
-            if (args.length != 3) {
+            if (args.length != 2) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/money giveall <Betrag>"));
                 return true;
             }
-            String s = args[2];
+            String s = args[1];
             if (!s.contains(".")) {
                 s = s + ".0";
             }
@@ -289,7 +289,7 @@ public class MoneyCommand implements CommandExecutor {
                 final Double d = Double.valueOf(s);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
                     Bukkit.getOnlinePlayers().forEach((all) -> {
-                        final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(all.getUniqueId().toString());
+                        final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(all.getUniqueId().toString());
                         if (dbPlayer.isSuccess()) {
                             dbPlayer.setMoney(dbPlayer.getMoney() + d);
                             if (!dbPlayer.isOnline()) {
@@ -312,11 +312,11 @@ public class MoneyCommand implements CommandExecutor {
                 cs.sendMessage(MessageUtil.MONEY_PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }
-            if (args.length != 3) {
+            if (args.length != 2) {
                 cs.sendMessage(MessageUtil.MONEY_PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/money takeall <Betrag>"));
                 return true;
             }
-            String s = args[2];
+            String s = args[1];
             if (!s.contains(".")) {
                 s = s + ".0";
             }
@@ -324,7 +324,7 @@ public class MoneyCommand implements CommandExecutor {
                 final Double d = Double.valueOf(s);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
                     Bukkit.getOnlinePlayers().forEach((all) -> {
-                        final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(all.getUniqueId().toString());
+                        final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(all.getUniqueId().toString());
                         if (dbPlayer.isSuccess()) {
                             dbPlayer.setMoney(dbPlayer.getMoney() - d);
                             if (!dbPlayer.isOnline()) {
@@ -347,7 +347,7 @@ public class MoneyCommand implements CommandExecutor {
                 return true;
             }
             Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[0]);
+                final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
                 if (dbPlayer.isSuccess()) {
                     cs.sendMessage(MessageUtil.MONEY_PREFIX.getLocal() + MessageUtil.MONEY_BALANCE_OTHER.getLocal().replaceAll("%moneyname", MessageUtil.MONEYNAME.getLocal()).replaceAll("%money", String.valueOf(dbPlayer.getMoney())).replaceAll("%player", args[0]));
                 } else {

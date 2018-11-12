@@ -30,7 +30,7 @@ public class UnBanCommand implements CommandExecutor {
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[0]);
+            DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
             if (!dbPlayer.isSuccess()) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_PLAYERNOTFOUND.getLocal());
             } else if (dbPlayer.getBan().equalsIgnoreCase("OK")) {

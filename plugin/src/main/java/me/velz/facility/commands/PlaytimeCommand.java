@@ -34,7 +34,7 @@ public class PlaytimeCommand implements CommandExecutor {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(player.getUniqueId().toString());
+                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
                     final String playtime = plugin.getTools().getPlaytime(dbPlayer.getPlaytime());
                     player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYTIME_SELF.getLocal().replaceAll("%playtime", playtime));
                 }
@@ -48,7 +48,7 @@ public class PlaytimeCommand implements CommandExecutor {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[0]);
+                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
                     if (dbPlayer.isSuccess()) {
                         final String playtime = Facility.getInstance().getTools().getPlaytime(dbPlayer.getPlaytime());
                         if (!dbPlayer.isOnline()) {

@@ -37,7 +37,7 @@ public class TokensCommand implements CommandExecutor {
             }
 
             final Player player = (Player) cs;
-            final double money = plugin.getMysqlDatabase().getUser(player.getUniqueId().toString()).getToken();
+            final double money = plugin.getDatabase().getUser(player.getUniqueId().toString()).getToken();
             String moneyString = String.valueOf(money);
             if (moneyString.contains(".")) {
                 String[] s = moneyString.split("\\.");
@@ -97,7 +97,7 @@ public class TokensCommand implements CommandExecutor {
                 }
                 final double d = Double.valueOf(m);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                    final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(player.getUniqueId().toString());
+                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
                     double money = dbPlayer.getToken();
                     if (money < d) {
                         cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TOKENS_NOTENOUGH.getLocal());
@@ -110,7 +110,7 @@ public class TokensCommand implements CommandExecutor {
                             if (target == player) {
                                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TOKENS_PAY_SELF.getLocal());
                             } else {
-                                final DatabasePlayer dbTarget = plugin.getMysqlDatabase().getUser(target.getUniqueId().toString());
+                                final DatabasePlayer dbTarget = plugin.getDatabase().getUser(target.getUniqueId().toString());
                                 double targetMoney = dbTarget.getToken();
                                 targetMoney = targetMoney + d;
                                 dbPlayer.setToken(money);
@@ -133,12 +133,12 @@ public class TokensCommand implements CommandExecutor {
             }
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TOKENS_BALANCETOP_HEADER.getLocal());
             int i = 1;
-            final String query = "SELECT * FROM " + plugin.getMysqlDatabase().getPrefix() + "players ORDER BY token DESC LIMIT 20";
+            final String query = "SELECT * FROM players ORDER BY token DESC LIMIT 20";
             Connection connection = null;
             PreparedStatement ps = null;
             ResultSet rs = null;
             try {
-                connection = plugin.getMysqlDatabase().getHikari().getConnection();
+                connection = plugin.getDatabase().getConnection();
                 ps = connection.prepareStatement(query);
                 rs = ps.executeQuery();
                 while (rs.next()) {
@@ -183,7 +183,7 @@ public class TokensCommand implements CommandExecutor {
             try {
                 final Double d = Double.valueOf(s);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                    final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[1]);
+                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[1]);
                     if (dbPlayer.isSuccess()) {
                         dbPlayer.setToken(d);
                         if (!dbPlayer.isOnline()) {
@@ -216,7 +216,7 @@ public class TokensCommand implements CommandExecutor {
             try {
                 final Double d = Double.valueOf(s);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                    final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[1]);
+                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[1]);
                     if (dbPlayer.isSuccess()) {
                         dbPlayer.setToken(dbPlayer.getToken() + d);
                         if (!dbPlayer.isOnline()) {
@@ -249,7 +249,7 @@ public class TokensCommand implements CommandExecutor {
             try {
                 final Double d = Double.valueOf(s);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                    final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[1]);
+                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[1]);
                     if (dbPlayer.isSuccess()) {
                         dbPlayer.setToken(dbPlayer.getToken() - d);
                         if (!dbPlayer.isOnline()) {
@@ -283,7 +283,7 @@ public class TokensCommand implements CommandExecutor {
                 final Double d = Double.valueOf(s);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
                     for (Player all : Bukkit.getOnlinePlayers()) {
-                        final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(all.getUniqueId().toString());
+                        final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(all.getUniqueId().toString());
                         if (dbPlayer.isSuccess()) {
                             dbPlayer.setToken(dbPlayer.getToken() + d);
                             if (!dbPlayer.isOnline()) {
@@ -318,7 +318,7 @@ public class TokensCommand implements CommandExecutor {
                 final Double d = Double.valueOf(s);
                 Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
                     for (Player all : Bukkit.getOnlinePlayers()) {
-                        final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(all.getUniqueId().toString());
+                        final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(all.getUniqueId().toString());
                         if (dbPlayer.isSuccess()) {
                             dbPlayer.setToken(dbPlayer.getToken() - d);
                             if (!dbPlayer.isOnline()) {
@@ -341,7 +341,7 @@ public class TokensCommand implements CommandExecutor {
                 return true;
             }
             Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[0]);
+                final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
                 if (dbPlayer.isSuccess()) {
                     cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TOKENS_BALANCE_OTHER.getLocal().replaceAll("%moneyname", MessageUtil.TOKENSNAME.getLocal()).replaceAll("%money", String.valueOf(dbPlayer.getToken())).replaceAll("%player", args[0]));
                 } else {

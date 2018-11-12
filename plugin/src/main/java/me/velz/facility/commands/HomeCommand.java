@@ -39,7 +39,7 @@ public class HomeCommand implements CommandExecutor {
             home = "home";
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(player.getUniqueId().toString());
+            final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
             if (!dbPlayer.getHomes().containsKey(home)) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_NOTFOUND.getLocal());
             } else {

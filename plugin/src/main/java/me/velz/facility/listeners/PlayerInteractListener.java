@@ -1,13 +1,17 @@
 package me.velz.facility.listeners;
 
 import me.velz.facility.Facility;
+import me.velz.facility.objects.FacilityArmorstand;
 import me.velz.facility.objects.FacilityTeleport;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class PlayerInteractListener implements Listener {
@@ -35,6 +39,38 @@ public class PlayerInteractListener implements Listener {
                     } else {
                         new FacilityTeleport(event.getPlayer(), plugin.getWarps().get(warp).getLoc(), MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_TELEPORT_SELF.getLocal().replaceAll("%warp", warp), plugin.getFileManager().getTeleportDelay());
                     }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onArmorstand(PlayerArmorStandManipulateEvent event) {
+        if (event.getRightClicked().getCustomName() == null) {
+            return;
+        }
+        for (FacilityArmorstand armorStand : plugin.getArmorstands().values()) {
+            if (armorStand.getName().equalsIgnoreCase(event.getRightClicked().getName())) {
+                if (event.getPlayer().hasPermission(armorStand.getPermission())) {
+                    armorStand.use(event.getPlayer());
+                }
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onArmorstand(PlayerInteractAtEntityEvent event) {
+        if (event.getRightClicked().getType() == EntityType.ARMOR_STAND) {
+            if (event.getRightClicked().getCustomName() == null) {
+                return;
+            }
+            for (FacilityArmorstand armorStand : plugin.getArmorstands().values()) {
+                if (armorStand.getName().equalsIgnoreCase(event.getRightClicked().getName())) {
+                    if (event.getPlayer().hasPermission(armorStand.getPermission())) {
+                        armorStand.use(event.getPlayer());
+                    }
+                    event.setCancelled(true);
                 }
             }
         }

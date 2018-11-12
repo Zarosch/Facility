@@ -29,7 +29,7 @@ public class HomeListCommand implements CommandExecutor {
         }
 
         final Player player = (Player) cs;
-        final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(player.getUniqueId().toString());
+        final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
         if (dbPlayer.getHomes().isEmpty()) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_NOHOMES.getLocal());
             return true;

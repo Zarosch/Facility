@@ -16,10 +16,10 @@ public class AsyncPlayerPreLoginListener implements Listener {
     
     @EventHandler
     public void onAsyncPrePlayerLogin(AsyncPlayerPreLoginEvent event) {
-        if (!plugin.getMysqlDatabase().issetUser(event.getUniqueId().toString())) {
-            plugin.getMysqlDatabase().insertUser(event.getUniqueId().toString(), event.getName());
+        if (!plugin.getDatabase().issetUser(event.getUniqueId().toString())) {
+            plugin.getDatabase().insertUser(event.getUniqueId().toString(), event.getName());
         }
-        DatabasePlayer dbPlayer = plugin.getMysqlDatabase().loadUser(event.getUniqueId().toString(), event.getName());
+        DatabasePlayer dbPlayer = plugin.getDatabase().loadUser(event.getUniqueId().toString(), event.getName());
         plugin.getPlayers().put(event.getUniqueId().toString(), dbPlayer);
     }
 

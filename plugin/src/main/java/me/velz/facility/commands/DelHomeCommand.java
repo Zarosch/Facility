@@ -36,7 +36,7 @@ public class DelHomeCommand implements CommandExecutor {
         final Player player = (Player) cs;
 
         Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-            final DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(player.getUniqueId().toString());
+            final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
             if (!dbPlayer.getHomes().containsKey(args[0])) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_NOTFOUND.getLocal());
             } else {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import lombok.Getter;
 import me.velz.facility.commands.BanCommand;
 import me.velz.facility.commands.BlockPhysicsCommand;
+import me.velz.facility.commands.BoatCommand;
 import me.velz.facility.commands.BroadcastCommand;
 import me.velz.facility.commands.ClearChatCommand;
 import me.velz.facility.commands.ClearinvCommand;
@@ -70,14 +71,18 @@ import me.velz.facility.commands.WarpCommand;
 import me.velz.facility.commands.WarpListCommand;
 import me.velz.facility.commands.WeatherCommand;
 import me.velz.facility.commands.WorkbenchCommand;
+import me.velz.facility.database.Database;
 import me.velz.facility.database.DatabasePlayer;
 import me.velz.facility.database.DatabaseWarp;
 import me.velz.facility.database.MySQLDatabase;
+import me.velz.facility.database.SQLiteDatabase;
+import me.velz.facility.functions.Broadcasts;
 import me.velz.facility.implementations.Implementations;
 import me.velz.facility.listeners.AsyncPlayerChatListener;
 import me.velz.facility.listeners.AsyncPlayerPreLoginListener;
 import me.velz.facility.listeners.BlockPhysicsListener;
 import me.velz.facility.listeners.EntityDamageListener;
+import me.velz.facility.listeners.PlayerInteractListener;
 import me.velz.facility.listeners.PlayerJoinListener;
 import me.velz.facility.listeners.PlayerKickListener;
 import me.velz.facility.listeners.PlayerLoginListener;
@@ -86,12 +91,15 @@ import me.velz.facility.listeners.PlayerQuitListener;
 import me.velz.facility.listeners.PlayerRespawnListener;
 import me.velz.facility.listeners.ServerListPingListener;
 import me.velz.facility.listeners.SignChangeListener;
+import me.velz.facility.objects.FacilityArmorstand;
+import me.velz.facility.objects.FacilityBroadcast;
 import me.velz.facility.objects.FacilityKit;
 import me.velz.facility.utils.FileManager;
 import me.velz.facility.utils.MessageUtil;
 import me.velz.facility.utils.Tools;
 import me.velz.facility.version.Version;
 import me.velz.facility.version.VersionMatcher;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -101,7 +109,7 @@ public class Facility extends JavaPlugin {
     private static Facility instance;
 
     @Getter
-    private final MySQLDatabase mysqlDatabase = new MySQLDatabase(this);
+    private Database database;
 
     @Getter
     private final Tools tools = new Tools();
@@ -117,13 +125,19 @@ public class Facility extends JavaPlugin {
 
     @Getter
     private final HashMap<String, DatabaseWarp> warps = new HashMap();
-    
+
     @Getter
     private final HashMap<String, FacilityKit> kits = new HashMap();
-    
+
+    @Getter
+    private final HashMap<String, FacilityArmorstand> armorstands = new HashMap();
+
     @Getter
     private final VersionMatcher versionMatcher = new VersionMatcher();
-    
+
+    @Getter
+    private final Broadcasts broadcasts = new Broadcasts();
+
     @Getter
     private Version version;
 
@@ -133,7 +147,12 @@ public class Facility extends JavaPlugin {
         version = this.getVersionMatcher().match();
         fileManager = new FileManager();
         MessageUtil.load();
-        this.getMysqlDatabase().connect();
+        if (getFileManager().getDatabaseType().equalsIgnoreCase("SQLite")) {
+            database = new SQLiteDatabase(this);
+        }
+        if (getFileManager().getDatabaseType().equalsIgnoreCase("MySQL")) {
+            database = new MySQLDatabase(this);
+        }
         this.getImplementations().hook();
         this.schedul();
         this.loadListener();
@@ -150,6 +169,7 @@ public class Facility extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerLoginListener(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerRespawnListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ServerListPingListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SignChangeListener(this), this);
@@ -157,6 +177,7 @@ public class Facility extends JavaPlugin {
 
     private void loadCommands() {
         getCommand("ban").setExecutor(new BanCommand(this));
+        getCommand("boat").setExecutor(new BoatCommand());
         getCommand("blockphysics").setExecutor(new BlockPhysicsCommand());
         getCommand("broadcast").setExecutor(new BroadcastCommand());
         getCommand("clearchat").setExecutor(new ClearChatCommand());
@@ -257,6 +278,8 @@ public class Facility extends JavaPlugin {
             this.getPlayers().values().forEach((dbPlayer) -> {
                 dbPlayer.setPlaytime(dbPlayer.getPlaytime() + 1);
             });
+            
+            broadcasts.schedule();
         }, 20, 20);
     }
 

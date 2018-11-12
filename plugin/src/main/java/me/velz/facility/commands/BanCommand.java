@@ -31,7 +31,7 @@ public class BanCommand implements CommandExecutor {
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            DatabasePlayer dbPlayer = plugin.getMysqlDatabase().getUser(args[0]);
+            DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
             if (!dbPlayer.isSuccess()) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_PLAYERNOTFOUND.getLocal());
             } else if (!dbPlayer.getBan().equalsIgnoreCase("OK")) {
@@ -43,7 +43,7 @@ public class BanCommand implements CommandExecutor {
                 }
                 reason = reason.substring(0, reason.length() - 1);
                 final String r = reason;
-                TextComponent component = new TextComponent(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_BANNED.getLocal().replaceAll("%reason", reason).replaceAll("%name", args[0]));
+                TextComponent component = new TextComponent(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_BANNEDBROADCAST.getLocal().replaceAll("%reason", reason).replaceAll("%name", args[0]));
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_BANNEDHOVER.getLocal().replaceAll("%punisher", cs.getName()).replaceAll("%time", "Permanent")).create()));
                 dbPlayer.setBan("BLOCKED;-1;" + reason);
                 dbPlayer.save();

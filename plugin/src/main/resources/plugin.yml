@@ -3,11 +3,13 @@ author: Kevin Velz
 version: 1.0
 api-version: 1.13
 main: me.velz.facility.Facility
-soft-depend: [PlaceholderAPI, Vault]
+softdepend: [PlaceholderAPI, Vault]
 commands:
     blockphysics:
         description: Toggle Blockphysics
         aliases: [tbs]
+    boat:
+        description: Spawn a Boat
     clearinv:
         description: Inventar leeren
         aliases: [invclear, ci, clear]

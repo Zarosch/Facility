@@ -37,17 +37,17 @@ public class DatabasePlayer {
     }
 
     public final void addHome(String name, Location loc) {
-        Facility.getInstance().getMysqlDatabase().addHome(uuid, name, loc);
+        Facility.getInstance().getDatabase().addHome(uuid, name, loc);
         homes.put(name, loc);
     }
 
     public final void deleteHome(String name) {
-        Facility.getInstance().getMysqlDatabase().deleteHome(uuid, name);
+        Facility.getInstance().getDatabase().deleteHome(uuid, name);
         homes.remove(name);
     }
 
     public void save() {
-        Facility.getInstance().getMysqlDatabase().saveUser(uuid, this);
+        Facility.getInstance().getDatabase().saveUser(uuid, this);
     }
 
 }

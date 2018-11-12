@@ -15,38 +15,37 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class MySQLDatabase implements Database {
+public class SQLiteDatabase implements Database {
 
     private Facility plugin;
     private Connection connection;
 
-    public MySQLDatabase(Facility plugin) {
+    public SQLiteDatabase(Facility plugin) {
         this.plugin = plugin;
         try {
-            this.connection = DriverManager.getConnection("jdbc:mysql://" + plugin.getFileManager().getDatabaseHost() + ":" + plugin.getFileManager().getDatabasePort() + "/" + plugin.getFileManager().getDatabaseDatabase() + "?autoReconnect=true", plugin.getFileManager().getDatabaseUser(), plugin.getFileManager().getDatabasePassword());
+            Class.forName("org.sqlite.JDBC");
+            this.connection = DriverManager.getConnection("jdbc:sqlite:plugins/Facility/database.db");
             Statement statement = this.connection.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36), name VARCHAR(16), money DOUBLE, token DOUBLE, playtime BIGINT, firstJoin BIGINT, lastJoin BIGINT, ban VARCHAR(100), mute VARCHAR(100), UNIQUE KEY (uuid))");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name VARCHAR(32), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (name))");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id int NOT NULL AUTO_INCREMENT, name VARCHAR(32), uuid VARCHAR(36), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (id))");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id int NOT NULL AUTO_INCREMENT, uuid VARCHAR(36), kit VARCHAR(100), expired BIGINT, UNIQUE KEY (id))");
-        } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid TEXT PRIMARY KEY, name TEXT, money DOUBLE, token DOUBLE, playtime INTEGER, firstJoin INTEGER, lastJoin INTEGER, ban TEXT, mute TEXT)");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name TEXT PRIMARY KEY, world TEXT, x DOUBLE, y REAL, z REAL, yaw REAL, pitch REAL)");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY, name TEXT, uuid TEXT, world TEXT, x REAL, y REAL, z REAL, yaw REAL, pitch REAL)");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id INTEGER PRIMARY KEY, uuid TEXT, kit TEXT, expired INTEGER)");
+        } catch (ClassNotFoundException | SQLException ex) {
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    //<editor-fold defaultstate="collapsed" desc="getConnection()">
+
     @Override
     public Connection getConnection() {
         try {
             if (this.connection.isClosed()) {
-                this.connection = DriverManager.getConnection("jdbc:mysql://" + plugin.getFileManager().getDatabaseHost() + ":" + plugin.getFileManager().getDatabasePort() + "/" + plugin.getFileManager().getDatabaseDatabase() + "?autoReconnect=true", plugin.getFileManager().getDatabaseUser(), plugin.getFileManager().getDatabasePassword());
+                this.connection = DriverManager.getConnection("jdbc:sqlite:plugins/Facility/database.db");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return this.connection;
     }
-    //</editor-fold>
 
     @Override
     public void loadWarps() {
@@ -60,7 +59,7 @@ public class MySQLDatabase implements Database {
             ps.close();
             rs.close();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -79,7 +78,7 @@ public class MySQLDatabase implements Database {
             ps.setString(9, "OK");
             ps.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -138,7 +137,7 @@ public class MySQLDatabase implements Database {
             ps.close();
             rs.close();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return dbPlayer;
     }
@@ -159,7 +158,7 @@ public class MySQLDatabase implements Database {
             ps.executeUpdate();
             ps.close();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -175,7 +174,7 @@ public class MySQLDatabase implements Database {
             ps.close();
             rs.close();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -190,7 +189,7 @@ public class MySQLDatabase implements Database {
                 return rs.getString("uuid");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -205,7 +204,7 @@ public class MySQLDatabase implements Database {
                 return rs.getString("name");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -225,7 +224,7 @@ public class MySQLDatabase implements Database {
             ps.executeUpdate();
             ps.close();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -237,7 +236,7 @@ public class MySQLDatabase implements Database {
             ps.setString(2, name);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -251,7 +250,7 @@ public class MySQLDatabase implements Database {
                 toplist.put(rs.getString("name"), rs.getDouble("money"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return toplist;
     }
@@ -266,7 +265,7 @@ public class MySQLDatabase implements Database {
                 toplist.put(rs.getString("name"), rs.getDouble("token"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return toplist;
     }
@@ -282,7 +281,7 @@ public class MySQLDatabase implements Database {
                 return true;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -301,7 +300,7 @@ public class MySQLDatabase implements Database {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return true;
     }
@@ -315,7 +314,7 @@ public class MySQLDatabase implements Database {
             ps.setLong(3, System.currentTimeMillis() + expired);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -327,8 +326,7 @@ public class MySQLDatabase implements Database {
             ps.setString(2, uuid);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 }

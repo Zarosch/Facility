@@ -20,6 +20,7 @@ public enum MessageUtil {
     SERVER_TABLIST_HEADER("§cHeader\n"),
     SERVER_TABLIST_FOOTER("§cFooter\n"),
     // Player Messages
+    PLAYER_BOAT("§6Wir wünschen eine schöne Fahrt."),
     PLAYER_HEAL_SELF("§6Du hast dich geheilt."),
     PLAYER_HEAL_OTHER("§6Du hast §e%player §6geheilt."),
     PLAYER_FEED_SELF("§6Du hast deinen Hunger gestillt."),
@@ -96,7 +97,7 @@ public enum MessageUtil {
     TELEPORT_TELEPORTCANCEL("§cDer Teleportationsvorgang wurde abgebrochen."),
     TELEPORT_TELEPORTSTART("§6Du wirst in §e%seconds Sekunden§6 teleportiert, bitte bewege dich nicht."),
     TELEPORT_JUMP_TOOFAR("§cDas ist leider zu weit."),
-    WARP_TELEPORT_SELF("§6Du wirst zum Warp '§e%warp§6' teleportiert."),
+    WARP_TELEPORT_SELF("§6Du wirst zum Warp §e%warp§6 teleportiert."),
     WARP_TELEPORT_OTHER("§6Du hast §e%player §6zum Warp §e%warp §6teleportiert."),
     WARP_LIST("§6Alle Warp-Punkte: §f%list"),
     WARP_NOWARPS("§cEs wurden noch keine Warps gesetzt."),
@@ -207,8 +208,8 @@ public enum MessageUtil {
     PUNISH_KICK("§aDer Spieler wurde gekickt."),
     PUNISH_ALREADYBANNED("§cDieser Spieler ist bereits gebannt."),
     PUNISH_ALREADYMUTED("§cDieser Spieler ist bereits gemutet."),
-    PUNISH_BANNED("§e%name §7wurde für §c%reason §7gebannt."),
-    PUNISH_MUTED("§e%name §7wurde für §c%reason §7gemutet."),
+    PUNISH_BANNEDBROADCAST("§e%name §7wurde für §c%reason §7gebannt."),
+    PUNISH_MUTEDBROADCAST("§e%name §7wurde für §c%reason §7gemutet."),
     PUNISH_BAN("§aDer Spieler wurde gebannt."),
     PUNISH_BANNEDSCREEN("§cDein Account wurde vom Server ausgeschlossen.\n §cDauer: §e%time \n §cGrund: §e%reason"),
     PUNISH_BANNEDHOVER("§cPunisher: §e%punisher\n §cDauer: §b%time"),
@@ -224,13 +225,13 @@ public enum MessageUtil {
     PUNISH_MUTED_MESSAGE("§r\n§cDu wurdest vom Chat ausgeschlossen.\n§cVerbleibende Zeit:§e %time\n§cGrund:§e %reason\n§r"),
     KIT_GIVEKIT("§6Du hast dir das Kit §e%kit §6gegeben."),
     KIT_NOTFOUND("§cDieses Kit konnte nicht gefunden werden."),
-    KIT_LIST("§6Alle verfügbaren Kits: §7%kits"),
+    KIT_LIST("§6Alle verfügbaren Kits: §f%kits"),
     KIT_NOKITS("§cEs wurden noch keine Kits erstellt."),
     KIT_CREATE("§6Du hast das Kit §e%kit §6erstellt."),
     KIT_DELETE("§6Du hast das Kit §e%kit §6gelöscht."),
     KIT_NOTREADY("§cDu kannst das Kit noch nicht erneut nutzen."),
     KIT_ALREADYEXIST("§cEs gibt bereits ein Kit mit diesem namen."),
-    FACILITY_HELP_RELOAD("§6/facility reload §f➡ §7Alle Konfigurationen neuladen"),
+    FACILITY_HELP_RELOAD("§6/facility reload §f➡ §fAlle Konfigurationen neuladen"),
     FACILITY_RELOAD("§6Alle Konfigurationen wurden neugeladen.");
 
     @Getter

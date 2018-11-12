@@ -45,13 +45,13 @@ public class SetWarpCommand implements CommandExecutor {
                 PreparedStatement ps = null;
                 ResultSet rs = null;
                 try {
-                    connection = plugin.getMysqlDatabase().getHikari().getConnection();
-                    String query = "SELECT * from " + plugin.getMysqlDatabase().getPrefix() + "warps WHERE name = ?";
+                    connection = plugin.getDatabase().getConnection();
+                    String query = "SELECT * from warps WHERE name = ?";
                     ps = connection.prepareStatement(query);
                     ps.setString(1, args[0]);
                     rs = ps.executeQuery();
                     if (rs.next()) {
-                        query = "UPDATE " + plugin.getMysqlDatabase().getPrefix() + "warps SET world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE name = ?";
+                        query = "UPDATE warps SET world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE name = ?";
                         ps = connection.prepareStatement(query);
                         ps.setString(1, player.getLocation().getWorld().getName());
                         ps.setDouble(2, player.getLocation().getX());
@@ -63,7 +63,7 @@ public class SetWarpCommand implements CommandExecutor {
                         ps.executeUpdate();
                         ps.close();
                     } else {
-                        query = "INSERT INTO " + plugin.getMysqlDatabase().getPrefix() + "warps (name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                        query = "INSERT INTO warps (name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?)";
                         ps = connection.prepareStatement(query);
                         ps.setString(1, args[0]);
                         ps.setString(2, player.getLocation().getWorld().getName());
@@ -77,22 +77,8 @@ public class SetWarpCommand implements CommandExecutor {
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(SetWarpCommand.class.getName()).log(Level.SEVERE, null, ex);
-                } finally {
-                    try {
-                        if (connection != null) {
-                            connection.close();
-                        }
-                        if (ps != null) {
-                            ps.close();
-                        }
-                        if (rs != null) {
-                            rs.close();
-                        }
-                    } catch (SQLException ex) {
-                        Logger.getLogger(SetWarpCommand.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    plugin.getWarps().put(args[0], warp);
                 }
+                plugin.getWarps().put(args[0], warp);
             });
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_SET.getLocal().replaceAll("%warp", args[0]));
         } else {

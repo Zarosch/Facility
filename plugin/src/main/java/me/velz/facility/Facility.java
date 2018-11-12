@@ -92,14 +92,12 @@ import me.velz.facility.listeners.PlayerRespawnListener;
 import me.velz.facility.listeners.ServerListPingListener;
 import me.velz.facility.listeners.SignChangeListener;
 import me.velz.facility.objects.FacilityArmorstand;
-import me.velz.facility.objects.FacilityBroadcast;
 import me.velz.facility.objects.FacilityKit;
 import me.velz.facility.utils.FileManager;
 import me.velz.facility.utils.MessageUtil;
 import me.velz.facility.utils.Tools;
 import me.velz.facility.version.Version;
 import me.velz.facility.version.VersionMatcher;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -254,31 +252,10 @@ public class Facility extends JavaPlugin {
 
     private void schedul() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            if (!TpaCommand.getTpaStorage().isEmpty()) {
-                TpaCommand.getTpaStorage().values().forEach((facilityTpa) -> {
-                    if (facilityTpa.getTimer() == 0) {
-                        facilityTpa.getPlayer1().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_TIMEOUT_PLAYER.getLocal().replaceAll("%player", facilityTpa.getPlayer2().getName()));
-                        facilityTpa.getPlayer2().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_TIMEOUT_TARGET.getLocal().replaceAll("%player", facilityTpa.getPlayer1().getName()));
-                        TpaCommand.getTpaStorage().remove(facilityTpa.getPlayer1());
-                    } else {
-                        facilityTpa.setTimer(facilityTpa.getTimer() - 1);
-                    }
-                });
-            }
-            if (!TpaCommand.getTeleportStorage().isEmpty()) {
-                TpaCommand.getTeleportStorage().values().forEach((facilityTeleport) -> {
-                    if (facilityTeleport.seconds == 0) {
-                        facilityTeleport.teleport();
-                        TpaCommand.getTeleportStorage().remove(facilityTeleport.player);
-                    } else {
-                        facilityTeleport.seconds--;
-                    }
-                });
-            }
             this.getPlayers().values().forEach((dbPlayer) -> {
                 dbPlayer.setPlaytime(dbPlayer.getPlaytime() + 1);
             });
-            
+            TpaCommand.schedule();
             broadcasts.schedule();
         }, 20, 20);
     }

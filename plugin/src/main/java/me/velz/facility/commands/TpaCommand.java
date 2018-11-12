@@ -71,4 +71,28 @@ public class TpaCommand implements CommandExecutor {
         return true;
     }
 
+    public static void schedule() {
+        if (!TpaCommand.getTpaStorage().isEmpty()) {
+            TpaCommand.getTpaStorage().values().forEach((facilityTpa) -> {
+                if (facilityTpa.getTimer() == 0) {
+                    facilityTpa.getPlayer1().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_TIMEOUT_PLAYER.getLocal().replaceAll("%player", facilityTpa.getPlayer2().getName()));
+                    facilityTpa.getPlayer2().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_TIMEOUT_TARGET.getLocal().replaceAll("%player", facilityTpa.getPlayer1().getName()));
+                    TpaCommand.getTpaStorage().remove(facilityTpa.getPlayer1());
+                } else {
+                    facilityTpa.setTimer(facilityTpa.getTimer() - 1);
+                }
+            });
+        }
+        if (!TpaCommand.getTeleportStorage().isEmpty()) {
+            TpaCommand.getTeleportStorage().values().forEach((facilityTeleport) -> {
+                if (facilityTeleport.seconds == 0) {
+                    facilityTeleport.teleport();
+                    TpaCommand.getTeleportStorage().remove(facilityTeleport.player);
+                } else {
+                    facilityTeleport.seconds--;
+                }
+            });
+        }
+    }
+
 }

@@ -5,6 +5,6 @@ This Spigot Plugin adds all general commands and function they you need. We are 
 **Supported Databases:** MySQL & SQLite   
 **Dependencies:** Vault, PlaceholderAPI   
   
-+ [Permissions & Commands](https://github.com/Zarosch/Facility/wiki/Permissions-&-Commands)   
-+ [Placeholders](https://github.com/Zarosch/Facility/wiki/Placeholders)   
-+ [Actions](https://github.com/Zarosch/Facility/wiki/Actions)   
++ [➢ Permissions & Commands](https://github.com/Zarosch/Facility/wiki/Permissions-&-Commands)   
++ [➢ Placeholders](https://github.com/Zarosch/Facility/wiki/Placeholders)   
++ [➢ Actions](https://github.com/Zarosch/Facility/wiki/Actions)   

@@ -64,6 +64,7 @@ import me.velz.facility.commands.TpaCommand;
 import me.velz.facility.commands.TpacceptCommand;
 import me.velz.facility.commands.TpahereCommand;
 import me.velz.facility.commands.TpdenyCommand;
+import me.velz.facility.commands.TrashCommand;
 import me.velz.facility.commands.UnBanCommand;
 import me.velz.facility.commands.UnMuteCommand;
 import me.velz.facility.commands.VanishCommand;
@@ -76,22 +77,17 @@ import me.velz.facility.database.DatabasePlayer;
 import me.velz.facility.database.DatabaseWarp;
 import me.velz.facility.database.MySQLDatabase;
 import me.velz.facility.database.SQLiteDatabase;
-import me.velz.facility.functions.Broadcasts;
+import me.velz.facility.functions.FunctionManager;
 import me.velz.facility.implementations.Implementations;
-import me.velz.facility.listeners.AsyncPlayerChatListener;
-import me.velz.facility.listeners.AsyncPlayerPreLoginListener;
+import me.velz.facility.listeners.ChatListener;
+import me.velz.facility.listeners.JoinListener;
 import me.velz.facility.listeners.BlockPhysicsListener;
-import me.velz.facility.listeners.EntityDamageListener;
-import me.velz.facility.listeners.PlayerInteractListener;
-import me.velz.facility.listeners.PlayerJoinListener;
-import me.velz.facility.listeners.PlayerKickListener;
-import me.velz.facility.listeners.PlayerLoginListener;
-import me.velz.facility.listeners.PlayerMoveListener;
-import me.velz.facility.listeners.PlayerQuitListener;
-import me.velz.facility.listeners.PlayerRespawnListener;
+import me.velz.facility.listeners.DamageListener;
+import me.velz.facility.listeners.MoveListener;
+import me.velz.facility.listeners.QuitListener;
+import me.velz.facility.listeners.RespawnListener;
 import me.velz.facility.listeners.ServerListPingListener;
-import me.velz.facility.listeners.SignChangeListener;
-import me.velz.facility.objects.FacilityArmorstand;
+import me.velz.facility.listeners.SignListener;
 import me.velz.facility.objects.FacilityKit;
 import me.velz.facility.utils.FileManager;
 import me.velz.facility.utils.MessageUtil;
@@ -128,13 +124,10 @@ public class Facility extends JavaPlugin {
     private final HashMap<String, FacilityKit> kits = new HashMap();
 
     @Getter
-    private final HashMap<String, FacilityArmorstand> armorstands = new HashMap();
+    private final FunctionManager functionManager = new FunctionManager(this);
 
     @Getter
     private final VersionMatcher versionMatcher = new VersionMatcher();
-
-    @Getter
-    private final Broadcasts broadcasts = new Broadcasts();
 
     @Getter
     private Version version;
@@ -143,7 +136,8 @@ public class Facility extends JavaPlugin {
     public void onEnable() {
         Facility.instance = this;
         version = this.getVersionMatcher().match();
-        fileManager = new FileManager();
+        this.getVersion().setPlugin(this);
+        fileManager = new FileManager(this);
         MessageUtil.load();
         if (getFileManager().getDatabaseType().equalsIgnoreCase("SQLite")) {
             database = new SQLiteDatabase(this);
@@ -155,27 +149,24 @@ public class Facility extends JavaPlugin {
         this.schedul();
         this.loadListener();
         this.loadCommands();
+        this.getFunctionManager().load();
     }
 
     private void loadListener() {
-        Bukkit.getPluginManager().registerEvents(new AsyncPlayerChatListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new AsyncPlayerPreLoginListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new ChatListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BlockPhysicsListener(), this);
-        Bukkit.getPluginManager().registerEvents(new EntityDamageListener(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerKickListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerLoginListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerRespawnListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new DamageListener(), this);
+        Bukkit.getPluginManager().registerEvents(new MoveListener(), this);
+        Bukkit.getPluginManager().registerEvents(new QuitListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new RespawnListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ServerListPingListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new SignChangeListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new SignListener(this), this);
     }
 
     private void loadCommands() {
         getCommand("ban").setExecutor(new BanCommand(this));
-        getCommand("boat").setExecutor(new BoatCommand());
+        getCommand("boat").setExecutor(new BoatCommand(this));
         getCommand("blockphysics").setExecutor(new BlockPhysicsCommand());
         getCommand("broadcast").setExecutor(new BroadcastCommand());
         getCommand("clearchat").setExecutor(new ClearChatCommand());
@@ -248,6 +239,7 @@ public class Facility extends JavaPlugin {
         getCommand("kit").setExecutor(new KitCommand(this));
         getCommand("createkit").setExecutor(new CreateKitCommand(this));
         getCommand("deletekit").setExecutor(new DeleteKitCommand(this));
+        getCommand("trash").setExecutor(new TrashCommand());
     }
 
     private void schedul() {
@@ -255,8 +247,8 @@ public class Facility extends JavaPlugin {
             this.getPlayers().values().forEach((dbPlayer) -> {
                 dbPlayer.setPlaytime(dbPlayer.getPlaytime() + 1);
             });
+            this.getFunctionManager().schedule();
             TpaCommand.schedule();
-            broadcasts.schedule();
         }, 20, 20);
     }
 

@@ -5,11 +5,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-public class PlayerRespawnListener implements Listener {
+public class RespawnListener implements Listener {
 
     private final Facility plugin;
 
-    public PlayerRespawnListener(Facility plugin) {
+    public RespawnListener(Facility plugin) {
         this.plugin = plugin;
     }
 

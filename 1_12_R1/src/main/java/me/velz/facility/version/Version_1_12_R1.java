@@ -9,6 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.entity.Boat;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -112,22 +114,28 @@ public class Version_1_12_R1 implements Version {
 
     @Override
     public Material getMaterial(String material) {
-        if(material.equalsIgnoreCase("MOB_SPAWNER")) {
+        if (material.equalsIgnoreCase("MOB_SPAWNER")) {
             return Material.MOB_SPAWNER;
         }
-        if(material.equalsIgnoreCase("SKULL_ITEM")) {
+        if (material.equalsIgnoreCase("SKULL_ITEM")) {
             return Material.SKULL_ITEM;
         }
-        if(material.equalsIgnoreCase("SKULL")) {
+        if (material.equalsIgnoreCase("SKULL")) {
             return Material.SKULL;
         }
-        if(material.equalsIgnoreCase("SIGN_POST")) {
+        if (material.equalsIgnoreCase("SIGN_POST")) {
             return Material.SIGN_POST;
         }
-        if(material.equalsIgnoreCase("STONE_SPADE")) {
+        if (material.equalsIgnoreCase("STONE_SPADE")) {
             return Material.STONE_SPADE;
         }
         return null;
+    }
+
+    @Override
+    public void addPlayerToBoat(Player player) {
+        Boat boat = (Boat) player.getWorld().spawnEntity(player.getLocation(), EntityType.BOAT);
+        boat.addPassenger(player);
     }
 
 }

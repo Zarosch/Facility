@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import me.velz.facility.Facility;
-import me.velz.facility.objects.FacilityArmorstand;
 import me.velz.facility.objects.FacilityKit;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -13,7 +12,19 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class FileManager {
+    
+    private final Facility plugin;
 
+    public FileManager(Facility plugin) {
+        this.plugin = plugin;
+        config = new FileBuilder(plugin.getDataFolder().getPath(), "config.yml");
+        spawn = new FileBuilder(plugin.getDataFolder().getPath() + "/data", "spawn.yml");
+        kits = new FileBuilder(plugin.getDataFolder().getPath() + "/data", "kits.yml");
+        setDefaults();
+        load();
+    }
+    
+    
     @Getter
     @Setter
     private String newbieBroadcastMessage, newbieKit, newbieWarp, chatFormat, teleportSoundType, databaseType, databaseHost, databaseUser, databasePassword, databaseDatabase;
@@ -32,16 +43,7 @@ public class FileManager {
     private Location spawnLocation;
 
     @Getter
-    private final FileBuilder config, spawn, kits, armorstands;
-
-    public FileManager() {
-        config = new FileBuilder("plugins/Facility/", "config.yml");
-        spawn = new FileBuilder("plugins/Facility/data/", "spawn.yml");
-        kits = new FileBuilder("plugins/Facility/content/", "kits.yml");
-        armorstands = new FileBuilder("plugins/Facility/content/", "armorstands.yml");
-        setDefaults();
-        load();
-    }
+    private final FileBuilder config, spawn, kits;
 
     public final void load() {
         this.getConfig().load();
@@ -84,20 +86,6 @@ public class FileManager {
         });
 
         // Armorstands
-        Facility.getInstance().getArmorstands().clear();
-        this.getArmorstands().getConfiguration().getConfigurationSection("armorstands").getKeys(false).forEach((armorstand) -> {
-            try {
-                final String permission = this.getArmorstands().getString("armorstands." + armorstand + ".permission");
-                final String name = ChatColor.translateAlternateColorCodes('&', this.getArmorstands().getString("armorstands." + armorstand + ".displayName"));
-                final String world = this.getArmorstands().getString("armorstands." + armorstand + ".world");
-                final ArrayList<String> playerCommands = this.getArmorstands().getStringListAsArrayList("armorstands." + armorstand + ".commands.player");
-                final ArrayList<String> consoleCommands = this.getArmorstands().getStringListAsArrayList("armorstands." + armorstand + ".commands.console");
-                final FacilityArmorstand facilityArmorstand = new FacilityArmorstand(world, name, permission, playerCommands, consoleCommands);
-                Facility.getInstance().getArmorstands().put(name, facilityArmorstand);
-            } catch (NullPointerException ex) {
-                System.out.println("[Facility] Error! Armorstand [" + armorstand + "] cannot be loaded.");
-            }
-        });
 
         // Spawn
         this.getSpawn().load();
@@ -107,8 +95,6 @@ public class FileManager {
             }
         }, 60L);
         
-        Facility.getInstance().getBroadcasts().load();
-
         this.newbieKit = this.getConfig().getString("newbie.kit");
         this.newbieWarp = this.getConfig().getString("newbie.warp");
         this.newbieBroadcastEnabled = this.getConfig().getBoolean("newbie.broadcast.enabled");
@@ -152,20 +138,6 @@ public class FileManager {
             this.getKits().addDefault("kits.newbie.items.shovel", new ItemBuilder().setMaterial(Facility.getInstance().getVersion().getMaterial("STONE_SPADE")).build());
             this.getKits().save();
         }
-
-        if (!this.getArmorstands().getConfiguration().contains("armorstands")) {
-            this.getArmorstands().addDefault("armorstands.default.displayName", "&eTest");
-            this.getArmorstands().addDefault("armorstands.default.permission", "armorstand.test");
-            this.getArmorstands().addDefault("armorstands.default.commands.player", new String[]{
-                "spawn"
-            });
-            this.getArmorstands().addDefault("armorstands.default.commands.console", new String[]{
-                "broadcast %player has used the Armorstand"
-            });
-            this.getArmorstands().save();
-        }
-
-        Facility.getInstance().getBroadcasts().setdefaults();
     }
 
 }

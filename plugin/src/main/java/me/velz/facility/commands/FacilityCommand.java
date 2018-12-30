@@ -30,6 +30,7 @@ public class FacilityCommand implements CommandExecutor {
         if (args[0].equalsIgnoreCase("reload")) {
             plugin.getFileManager().load();
             MessageUtil.load();
+            plugin.getFunctionManager().reload();
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.FACILITY_RELOAD.getLocal());
             return true;
         }

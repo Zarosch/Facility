@@ -231,6 +231,8 @@ public enum MessageUtil {
     KIT_DELETE("§6Du hast das Kit §e%kit §6gelöscht."),
     KIT_NOTREADY("§cDu kannst das Kit noch nicht erneut nutzen."),
     KIT_ALREADYEXIST("§cEs gibt bereits ein Kit mit diesem namen."),
+    TRASH_TITLE("Müll"),
+    TRASH_MESSAGE("§6Viel Spaß beim Müll entsorgen."),
     FACILITY_HELP_RELOAD("§6/facility reload §f➡ §fAlle Konfigurationen neuladen"),
     FACILITY_RELOAD("§6Alle Konfigurationen wurden neugeladen.");
 

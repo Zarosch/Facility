@@ -1,25 +1,48 @@
 package me.velz.facility.listeners;
 
 import me.velz.facility.Facility;
-import me.velz.facility.objects.FacilityArmorstand;
 import me.velz.facility.objects.FacilityTeleport;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class PlayerInteractListener implements Listener {
+public class SignListener implements Listener {
 
     private final Facility plugin;
 
-    public PlayerInteractListener(Facility plugin) {
+    public SignListener(Facility plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler
+    public void onSignChange(SignChangeEvent event) {
+        if (event.getPlayer().hasPermission("facility.color.signs")) {
+            int i = 0;
+            for (String line : event.getLines()) {
+                event.setLine(i, net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', line));
+                i++;
+            }
+        }
+        if (!event.getPlayer().hasPermission("facility.sign.warp")) {
+            if (event.getLine(1).equalsIgnoreCase("[Warp]") || event.getLine(1).equalsIgnoreCase("&8[&1Warp&8]")) {
+                event.getPlayer().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
+                event.setCancelled(true);
+            }
+        } else {
+            if (event.getLine(1).equalsIgnoreCase("[Warp]") || event.getLine(1).equalsIgnoreCase("&8[&1Warp&8]")) {
+                if (!plugin.getWarps().containsKey(event.getLine(2))) {
+                    event.getPlayer().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_NOTFOUND.getLocal());
+                    event.setCancelled(true);
+                } else {
+                    event.setLine(1, "§8[§1Warp§8]");
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -39,38 +62,6 @@ public class PlayerInteractListener implements Listener {
                     } else {
                         new FacilityTeleport(event.getPlayer(), plugin.getWarps().get(warp).getLoc(), MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_TELEPORT_SELF.getLocal().replaceAll("%warp", warp), plugin.getFileManager().getTeleportDelay());
                     }
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onArmorstand(PlayerArmorStandManipulateEvent event) {
-        if (event.getRightClicked().getCustomName() == null) {
-            return;
-        }
-        for (FacilityArmorstand armorStand : plugin.getArmorstands().values()) {
-            if (armorStand.getName().equalsIgnoreCase(event.getRightClicked().getName())) {
-                if (event.getPlayer().hasPermission(armorStand.getPermission())) {
-                    armorStand.use(event.getPlayer());
-                }
-                event.setCancelled(true);
-            }
-        }
-    }
-
-    @EventHandler
-    public void onArmorstand(PlayerInteractAtEntityEvent event) {
-        if (event.getRightClicked().getType() == EntityType.ARMOR_STAND) {
-            if (event.getRightClicked().getCustomName() == null) {
-                return;
-            }
-            for (FacilityArmorstand armorStand : plugin.getArmorstands().values()) {
-                if (armorStand.getName().equalsIgnoreCase(event.getRightClicked().getName())) {
-                    if (event.getPlayer().hasPermission(armorStand.getPermission())) {
-                        armorStand.use(event.getPlayer());
-                    }
-                    event.setCancelled(true);
                 }
             }
         }

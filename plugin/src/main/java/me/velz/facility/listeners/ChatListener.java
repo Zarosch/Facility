@@ -12,25 +12,30 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class AsyncPlayerChatListener implements Listener {
+public class ChatListener implements Listener {
     
     private final Facility plugin;
 
-    public AsyncPlayerChatListener(Facility plugin) {
+    public ChatListener(Facility plugin) {
         this.plugin = plugin;
     }
     
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+        //<editor-fold defaultstate="collapsed" desc="Is Globalmute on?">
         if (GlobalMuteCommand.isGlobalMute() && !event.getPlayer().hasPermission("facility.bypass.globalmute")) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.CHAT_GLOBALMUTE_CANCEL.getLocal());
             return;
         }
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Chat Color">
         if (event.getPlayer().hasPermission("facility.color.chat")) {
             event.setMessage(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
         }
+        //</editor-fold>
         event.setCancelled(true);
+        //<editor-fold defaultstate="collapsed" desc="Is player muted?">
         DatabasePlayer dbPlayer = plugin.getDatabase().getUser(event.getPlayer().getUniqueId().toString());
         if (!dbPlayer.getMute().equalsIgnoreCase("OK")) {
             final String[] data = dbPlayer.getMute().split(";");
@@ -43,6 +48,8 @@ public class AsyncPlayerChatListener implements Listener {
             event.getPlayer().sendMessage(MessageUtil.PUNISH_MUTED_MESSAGE.getLocal().replaceAll("%reason", data[2]).replaceAll("%time", duration));
             return;
         }
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Build Message">
         String message = ChatColor.translateAlternateColorCodes('&', plugin.getFileManager().getChatFormat())
                 .replaceAll("%player", event.getPlayer().getName())
                 .replaceAll("%prefix", plugin.getImplementations().getVault().getChat().getPlayerPrefix(event.getPlayer()));
@@ -50,12 +57,15 @@ public class AsyncPlayerChatListener implements Listener {
             message = PlaceholderAPI.setPlaceholders(event.getPlayer(), message);
         }
         String chatmessage = event.getMessage();
+        //</editor-fold>
+        //<editor-fold defaultstate="collapsed" desc="Chat @Mention">
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (chatmessage.contains(player.getName())) {
                 chatmessage = chatmessage.replaceAll(player.getName(), "§b@" + player.getName() + "§f");
                 player.playSound(player.getLocation(), plugin.getVersion().getSound("BLOCK_NOTE_BELL"), 1, 1);
             }
         }
+        //</editor-fold>
         Bukkit.broadcastMessage(message.replaceAll("%message", chatmessage));
     }
 }

@@ -4,6 +4,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -40,5 +41,7 @@ public interface Version {
     public Location getTargetBlock(Player player, Integer distance);
     
     public Material getMaterial(String material);
+    
+    public void addPlayerToBoat(Player player);
     
 }

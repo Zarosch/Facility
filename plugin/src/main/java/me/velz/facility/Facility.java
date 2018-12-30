@@ -145,6 +145,7 @@ public class Facility extends JavaPlugin {
         if (getFileManager().getDatabaseType().equalsIgnoreCase("MySQL")) {
             database = new MySQLDatabase(this);
         }
+        this.database.loadWarps();
         this.getImplementations().hook();
         this.schedul();
         this.loadListener();

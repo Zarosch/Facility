@@ -36,7 +36,7 @@ public class FileManager {
     private Integer teleportDelay, broadcastTime, chatDelay, databasePort;
 
     @Getter
-    private boolean newbieBroadcastEnabled, broadcastEnabled;
+    private boolean newbieBroadcastEnabled, broadcastEnabled, chatMention;
 
     @Getter
     @Setter
@@ -58,6 +58,7 @@ public class FileManager {
 
         // Chat
         chatFormat = this.getConfig().getString("chat.format");
+        chatMention = this.getConfig().getBoolean("chat.mention");
 
         // Teleport
         teleportDelay = this.getConfig().getInt("teleport.delay");
@@ -112,6 +113,7 @@ public class FileManager {
 
         // Chat
         this.getConfig().addDefault("chat.format", "%prefix%player &7>&7 %message");
+        this.getConfig().addDefault("chat.mention", true);
 
         // Teleport
         this.getConfig().addDefault("teleport.delay", 3);

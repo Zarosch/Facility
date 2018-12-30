@@ -13,13 +13,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatListener implements Listener {
-    
+
     private final Facility plugin;
 
     public ChatListener(Facility plugin) {
         this.plugin = plugin;
     }
-    
+
     @EventHandler
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         //<editor-fold defaultstate="collapsed" desc="Is Globalmute on?">
@@ -59,10 +59,16 @@ public class ChatListener implements Listener {
         String chatmessage = event.getMessage();
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Chat @Mention">
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (chatmessage.contains(player.getName())) {
-                chatmessage = chatmessage.replaceAll(player.getName(), "§b@" + player.getName() + "§f");
-                player.playSound(player.getLocation(), plugin.getVersion().getSound("BLOCK_NOTE_BELL"), 1, 1);
+        if (plugin.getFileManager().isChatMention()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (chatmessage.contains("@" + player.getName())) {
+                    chatmessage = chatmessage.replaceAll("@" + player.getName(), "§b@" + player.getName() + "§f");
+                    player.playSound(player.getLocation(), plugin.getVersion().getSound("BLOCK_NOTE_BELL"), 1, 1);
+                } else
+                if (chatmessage.contains(player.getName())) {
+                    chatmessage = chatmessage.replaceAll(player.getName(), "§b@" + player.getName() + "§f");
+                    player.playSound(player.getLocation(), plugin.getVersion().getSound("BLOCK_NOTE_BELL"), 1, 1);
+                }
             }
         }
         //</editor-fold>

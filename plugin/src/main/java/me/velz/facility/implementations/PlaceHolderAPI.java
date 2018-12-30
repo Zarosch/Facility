@@ -1,5 +1,6 @@
 package me.velz.facility.implementations;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.external.EZPlaceholderHook;
 import me.velz.facility.Facility;
 import me.velz.facility.database.DatabasePlayer;
@@ -12,6 +13,10 @@ public class PlaceHolderAPI extends EZPlaceholderHook {
     public PlaceHolderAPI(Facility plugin, String identifier) {
         super(plugin, "facility");
         this.plugin = plugin;
+    }
+    
+    public String replace(Player player, String message) {
+        return PlaceholderAPI.setPlaceholders(player, message);
     }
 
     @Override

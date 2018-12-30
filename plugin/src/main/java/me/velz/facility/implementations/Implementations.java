@@ -8,6 +8,9 @@ public class Implementations {
 
     @Getter
     private Vault vault;
+    
+    @Getter
+    private PlaceHolderAPI placeholderapi;
 
     public void hook() {
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
@@ -22,7 +25,8 @@ public class Implementations {
             System.out.println("[Facility] Vault was not found.");
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            new PlaceHolderAPI(Facility.getInstance(), "facility").hook();
+            this.placeholderapi = new PlaceHolderAPI(Facility.getInstance(), "facility");
+            this.placeholderapi.hook();
         } else {
             System.out.println("[Facility] PlaceholderAPI was not found.");
         }

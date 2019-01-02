@@ -29,4 +29,8 @@ public interface Database {
     public void insertKitCooldown(String uuid, String kit, Integer expired);
     public void updateKitCooldown(String uuid, String kit, Integer expired);
     
+    public void addWarp(String name, Location loc);
+    public void deleteWarp(String name);
+    public void updateWarp(String name, Location location);
+    
 }

@@ -1,11 +1,5 @@
 package me.velz.facility.commands;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.velz.facility.Facility;
 import me.velz.facility.database.DatabaseWarp;
 import me.velz.facility.utils.MessageUtil;
@@ -41,43 +35,7 @@ public class SetWarpCommand implements CommandExecutor {
             Player player = (Player) cs;
             DatabaseWarp warp = new DatabaseWarp(args[0], player.getLocation());
             Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
-                Connection connection = null;
-                PreparedStatement ps = null;
-                ResultSet rs = null;
-                try {
-                    connection = plugin.getDatabase().getConnection();
-                    String query = "SELECT * from warps WHERE name = ?";
-                    ps = connection.prepareStatement(query);
-                    ps.setString(1, args[0]);
-                    rs = ps.executeQuery();
-                    if (rs.next()) {
-                        query = "UPDATE warps SET world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE name = ?";
-                        ps = connection.prepareStatement(query);
-                        ps.setString(1, player.getLocation().getWorld().getName());
-                        ps.setDouble(2, player.getLocation().getX());
-                        ps.setDouble(3, player.getLocation().getY());
-                        ps.setDouble(4, player.getLocation().getZ());
-                        ps.setFloat(5, player.getLocation().getYaw());
-                        ps.setFloat(6, player.getLocation().getPitch());
-                        ps.setString(7, args[0]);
-                        ps.executeUpdate();
-                        ps.close();
-                    } else {
-                        query = "INSERT INTO warps (name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                        ps = connection.prepareStatement(query);
-                        ps.setString(1, args[0]);
-                        ps.setString(2, player.getLocation().getWorld().getName());
-                        ps.setDouble(3, player.getLocation().getX());
-                        ps.setDouble(4, player.getLocation().getY());
-                        ps.setDouble(5, player.getLocation().getZ());
-                        ps.setFloat(6, player.getLocation().getYaw());
-                        ps.setFloat(7, player.getLocation().getPitch());
-                        ps.executeUpdate();
-                        ps.close();
-                    }
-                } catch (SQLException ex) {
-                    Logger.getLogger(SetWarpCommand.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                plugin.getDatabase().addWarp(args[0], player.getLocation());
                 plugin.getWarps().put(args[0], warp);
             });
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_SET.getLocal().replaceAll("%warp", args[0]));

@@ -11,6 +11,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.velz.facility.Facility;
+import me.velz.facility.commands.DelWarpCommand;
+import me.velz.facility.commands.SetWarpCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -20,6 +22,7 @@ public class MySQLDatabase implements Database {
     private Facility plugin;
     private Connection connection;
 
+    //<editor-fold defaultstate="collapsed" desc="constructor">
     public MySQLDatabase(Facility plugin) {
         this.plugin = plugin;
         try {
@@ -33,7 +36,8 @@ public class MySQLDatabase implements Database {
             Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="getConnection()">
     @Override
     public Connection getConnection() {
@@ -48,6 +52,7 @@ public class MySQLDatabase implements Database {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="loadWarps()">
     @Override
     public void loadWarps() {
         try {
@@ -63,7 +68,9 @@ public class MySQLDatabase implements Database {
             Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="insertUser(uuid, name)">
     @Override
     public void insertUser(String uuid, String name) {
         try {
@@ -82,7 +89,9 @@ public class MySQLDatabase implements Database {
             Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="getUser(uuid)">
     @Override
     public DatabasePlayer getUser(String uuid) {
         String uid = uuid;
@@ -98,7 +107,9 @@ public class MySQLDatabase implements Database {
         DatabasePlayer dbPlayer = loadUser(uid, null);
         return dbPlayer;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="loadUser(uuid, name)">
     @Override
     public DatabasePlayer loadUser(String uuid, String name) {
         final DatabasePlayer dbPlayer = new DatabasePlayer(uuid, name);
@@ -142,7 +153,9 @@ public class MySQLDatabase implements Database {
         }
         return dbPlayer;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="saveUser(uuid, dbPlayer)">
     @Override
     public void saveUser(String uuid, DatabasePlayer dbPlayer) {
         try {
@@ -162,7 +175,9 @@ public class MySQLDatabase implements Database {
             Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="issetUser(uuid)">
     @Override
     public boolean issetUser(String uuid) {
         try {
@@ -179,7 +194,9 @@ public class MySQLDatabase implements Database {
         }
         return false;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="getUUID(name)">
     @Override
     public String getUUID(String name) {
         try {
@@ -194,7 +211,9 @@ public class MySQLDatabase implements Database {
         }
         return null;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="getName(uuid)">
     @Override
     public String getName(String uuid) {
         try {
@@ -209,26 +228,49 @@ public class MySQLDatabase implements Database {
         }
         return null;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="addHome(uuid, name, loc)">
     @Override
     public void addHome(String uuid, String name, Location loc) {
         try {
-            PreparedStatement ps = getConnection().prepareStatement("INSERT INTO homes (uuid, name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            ps.setString(1, uuid);
-            ps.setString(2, name);
-            ps.setString(3, loc.getWorld().getName());
-            ps.setDouble(4, loc.getX());
-            ps.setDouble(5, loc.getY());
-            ps.setDouble(6, loc.getZ());
-            ps.setFloat(7, loc.getYaw());
-            ps.setFloat(8, loc.getPitch());
-            ps.executeUpdate();
-            ps.close();
+            String query = "SELECT * from homes WHERE name = ? and uuid = ?";
+            PreparedStatement ps = this.connection.prepareStatement(query);
+            ps.setString(1, name);
+            ps.setString(2, uuid);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                ps = getConnection().prepareStatement("UPDATE homes SET world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE name = ? and uuid = ?");
+                ps.setString(1, loc.getWorld().getName());
+                ps.setDouble(2, loc.getX());
+                ps.setDouble(3, loc.getY());
+                ps.setDouble(4, loc.getZ());
+                ps.setFloat(5, loc.getYaw());
+                ps.setFloat(6, loc.getPitch());
+                ps.setString(7, uuid);
+                ps.setString(8, name);
+                ps.executeUpdate();
+                ps.close();
+            } else {
+                ps = getConnection().prepareStatement("INSERT INTO homes (uuid, name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                ps.setString(1, uuid);
+                ps.setString(2, name);
+                ps.setString(3, loc.getWorld().getName());
+                ps.setDouble(4, loc.getX());
+                ps.setDouble(5, loc.getY());
+                ps.setDouble(6, loc.getZ());
+                ps.setFloat(7, loc.getYaw());
+                ps.setFloat(8, loc.getPitch());
+                ps.executeUpdate();
+                ps.close();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="deleteHome(uuid, name)">
     @Override
     public void deleteHome(String uuid, String name) {
         try {
@@ -240,7 +282,9 @@ public class MySQLDatabase implements Database {
             Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="moneyToplist()">
     @Override
     public HashMap<String, Double> moneyToplist() {
         HashMap<String, Double> toplist = new HashMap();
@@ -255,7 +299,9 @@ public class MySQLDatabase implements Database {
         }
         return toplist;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="tokenToplist()">
     @Override
     public HashMap<String, Double> tokenToplist() {
         HashMap<String, Double> toplist = new HashMap();
@@ -270,7 +316,9 @@ public class MySQLDatabase implements Database {
         }
         return toplist;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="issetKitCooldown(uuid, kit)">
     @Override
     public boolean issetKitCooldown(String uuid, String kit) {
         try {
@@ -286,7 +334,9 @@ public class MySQLDatabase implements Database {
         }
         return false;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="isKitCooldownExpired(player, kit)">
     @Override
     public boolean isKitCooldownExpired(Player player, String kit) {
         try {
@@ -305,7 +355,9 @@ public class MySQLDatabase implements Database {
         }
         return true;
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="insertKitCooldown(uuid, kit, expired)">
     @Override
     public void insertKitCooldown(String uuid, String kit, Integer expired) {
         try {
@@ -318,7 +370,9 @@ public class MySQLDatabase implements Database {
             Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="updateKitCooldown(uuid, kit, expired)">
     @Override
     public void updateKitCooldown(String uuid, String kit, Integer expired) {
         try {
@@ -330,5 +384,68 @@ public class MySQLDatabase implements Database {
             Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="addWarp(name, loc)">
+    @Override
+    public void addWarp(String name, Location loc) {
+        PreparedStatement ps;
+        ResultSet rs;
+        try {
+            String query = "SELECT * from warps WHERE name = ?";
+            ps = this.connection.prepareStatement(query);
+            ps.setString(1, name);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                query = "UPDATE warps SET world = ?, x = ?, y = ?, z = ?, yaw = ?, pitch = ? WHERE name = ?";
+                ps = connection.prepareStatement(query);
+                ps.setString(1, loc.getWorld().getName());
+                ps.setDouble(2, loc.getX());
+                ps.setDouble(3, loc.getY());
+                ps.setDouble(4, loc.getZ());
+                ps.setFloat(5, loc.getYaw());
+                ps.setFloat(6, loc.getPitch());
+                ps.setString(7, name);
+                ps.executeUpdate();
+                ps.close();
+            } else {
+                query = "INSERT INTO warps (name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                ps = connection.prepareStatement(query);
+                ps.setString(1, name);
+                ps.setString(2, loc.getWorld().getName());
+                ps.setDouble(3, loc.getX());
+                ps.setDouble(4, loc.getY());
+                ps.setDouble(5, loc.getZ());
+                ps.setFloat(6, loc.getYaw());
+                ps.setFloat(7, loc.getPitch());
+                ps.executeUpdate();
+                ps.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SetWarpCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="deleteWarp(name)">
+    @Override
+    public void deleteWarp(String name) {
+        try {
+            String query = "SELECT * FROM warps WHERE name = ?";
+            PreparedStatement ps = this.connection.prepareStatement(query);
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                query = "DELETE FROM warps WHERE name = ?";
+                ps = this.connection.prepareStatement(query);
+                ps.setString(1, name);
+                ps.executeUpdate();
+                ps.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DelWarpCommand.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    //</editor-fold>
 
 }

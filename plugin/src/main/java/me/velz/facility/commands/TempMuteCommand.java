@@ -46,7 +46,7 @@ public class TempMuteCommand implements CommandExecutor {
                 final String r = reason;
                 TextComponent component = new TextComponent(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_MUTEDBROADCAST.getLocal().replaceAll("%reason", reason).replaceAll("%name", args[0]));
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_MUTEDHOVER.getLocal().replaceAll("%punisher", cs.getName()).replaceAll("%time", "Permanent")).create()));
-                dbPlayer.setBan("BLOCKED;" + (time + System.currentTimeMillis()) + ";" + reason);
+                dbPlayer.setMute("BLOCKED;" + (time + System.currentTimeMillis()) + ";" + reason);
                 Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.mute") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.commands.mute"))).forEachOrdered((all) -> {
                     Facility.getInstance().getVersion().sendComponentMessage(all, component);
                 });

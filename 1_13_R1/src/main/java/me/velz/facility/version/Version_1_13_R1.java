@@ -1,6 +1,7 @@
 package me.velz.facility.version;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_13_R1.EntityPlayer;
 import net.minecraft.server.v1_13_R1.IChatBaseComponent;
@@ -136,6 +137,17 @@ public class Version_1_13_R1 implements Version {
     public void addPlayerToBoat(Player player) {
         Boat boat = (Boat) player.getWorld().spawnEntity(player.getLocation(), EntityType.BOAT);
         boat.addPassenger(player);
+    }
+
+    @Override
+    public boolean isSign(Material material) {
+        ArrayList<Material> materials = new ArrayList<>();
+        materials.add(Material.SIGN);
+        materials.add(Material.WALL_SIGN);
+        if (materials.contains(material)) {
+            return true;
+        }
+        return false;
     }
 
 }

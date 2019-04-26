@@ -2,11 +2,11 @@ package me.velz.facility.version;
 
 import java.util.ArrayList;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_13_R2.EntityPlayer;
+import net.minecraft.server.v1_14_R1.EntityPlayer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Version_1_13_R2 implements Version {
+public class Version_1_14_R1 implements Version {
 
     public JavaPlugin plugin = null;
 
@@ -125,9 +125,6 @@ public class Version_1_13_R2 implements Version {
         if (material.equalsIgnoreCase("SKULL")) {
             return Material.PLAYER_WALL_HEAD;
         }
-        if (material.equalsIgnoreCase("SIGN_POST")) {
-            return Material.WALL_SIGN;
-        }
         if (material.equalsIgnoreCase("STONE_SPADE")) {
             return Material.STONE_SHOVEL;
         }
@@ -143,8 +140,18 @@ public class Version_1_13_R2 implements Version {
     @Override
     public boolean isSign(Material material) {
         ArrayList<Material> materials = new ArrayList<>();
-        materials.add(Material.SIGN);
-        materials.add(Material.WALL_SIGN);
+        materials.add(Material.OAK_SIGN);
+        materials.add(Material.OAK_WALL_SIGN);
+        materials.add(Material.DARK_OAK_SIGN);
+        materials.add(Material.DARK_OAK_WALL_SIGN);
+        materials.add(Material.ACACIA_SIGN);
+        materials.add(Material.ACACIA_WALL_SIGN);
+        materials.add(Material.BIRCH_SIGN);
+        materials.add(Material.BIRCH_WALL_SIGN);
+        materials.add(Material.JUNGLE_SIGN);
+        materials.add(Material.JUNGLE_WALL_SIGN);
+        materials.add(Material.SPRUCE_SIGN);
+        materials.add(Material.SPRUCE_WALL_SIGN);
         if (materials.contains(material)) {
             return true;
         }

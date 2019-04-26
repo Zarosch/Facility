@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 
 public class SQLiteDatabase implements Database {
 
-    private Facility plugin;
+    private final Facility plugin;
     private Connection connection;
 
     //<editor-fold defaultstate="collapsed" desc="constructor">
@@ -32,6 +32,7 @@ public class SQLiteDatabase implements Database {
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name TEXT PRIMARY KEY, world TEXT, x DOUBLE, y REAL, z REAL, yaw REAL, pitch REAL)");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY, name TEXT, uuid TEXT, world TEXT, x REAL, y REAL, z REAL, yaw REAL, pitch REAL)");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id INTEGER PRIMARY KEY, uuid TEXT, kit TEXT, expired INTEGER)");
+                loadWarps();
             } catch (ClassNotFoundException | SQLException ex) {
                 Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
             }

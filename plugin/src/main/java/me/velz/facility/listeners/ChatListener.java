@@ -34,10 +34,10 @@ public class ChatListener implements Listener {
             event.setMessage(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
         }
         //</editor-fold>
-        event.setCancelled(true);
         //<editor-fold defaultstate="collapsed" desc="Is player muted?">
         DatabasePlayer dbPlayer = plugin.getDatabase().getUser(event.getPlayer().getUniqueId().toString());
         if (!dbPlayer.getMute().equalsIgnoreCase("OK")) {
+            event.setCancelled(true);
             final String[] data = dbPlayer.getMute().split(";");
             String duration;
             if (data[1].equalsIgnoreCase("-1")) {
@@ -51,7 +51,7 @@ public class ChatListener implements Listener {
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Build Message">
         String message = ChatColor.translateAlternateColorCodes('&', plugin.getFileManager().getChatFormat())
-                .replaceAll("%player", event.getPlayer().getName())
+                .replaceAll("%player", "%s")
                 .replaceAll("%prefix", plugin.getImplementations().getVault().getChat().getPlayerPrefix(event.getPlayer()));
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             message = PlaceholderAPI.setPlaceholders(event.getPlayer(), message);
@@ -72,6 +72,7 @@ public class ChatListener implements Listener {
             }
         }
         //</editor-fold>
-        Bukkit.broadcastMessage(message.replaceAll("%message", chatmessage));
+        event.setMessage(chatmessage);
+        event.setFormat(message.replaceAll("%message", "%s"));
     }
 }

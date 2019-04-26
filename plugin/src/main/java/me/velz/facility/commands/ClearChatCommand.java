@@ -1,7 +1,6 @@
 package me.velz.facility.commands;
 
 import me.velz.facility.utils.MessageUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,7 +14,9 @@ public class ClearChatCommand implements CommandExecutor {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
-        Bukkit.broadcastMessage(StringUtils.repeat(" \n", 120));
+        for(int i = 0; i != 120; i++) {
+            Bukkit.broadcastMessage(" ");
+        }
         Bukkit.broadcastMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.CHAT_CLEAR.getLocal().replaceAll("%player", cs.getName()));
         return true;
     }

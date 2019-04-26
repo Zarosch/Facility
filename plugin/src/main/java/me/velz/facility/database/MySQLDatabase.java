@@ -33,6 +33,7 @@ public class MySQLDatabase implements Database {
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name VARCHAR(32), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (name))");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id int NOT NULL AUTO_INCREMENT, name VARCHAR(32), uuid VARCHAR(36), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (id))");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id int NOT NULL AUTO_INCREMENT, uuid VARCHAR(36), kit VARCHAR(100), expired BIGINT, UNIQUE KEY (id))");
+                loadWarps();
             } catch (SQLException ex) {
                 Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
             }

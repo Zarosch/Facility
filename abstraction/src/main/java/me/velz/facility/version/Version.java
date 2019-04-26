@@ -44,4 +44,6 @@ public interface Version {
     
     public void addPlayerToBoat(Player player);
     
+    public boolean isSign(Material material);
+    
 }

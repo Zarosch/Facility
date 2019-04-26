@@ -22,7 +22,7 @@ public class TempMuteCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.commands.tempmute")) {
+        if (!cs.hasPermission("facility.command.tempmute")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }

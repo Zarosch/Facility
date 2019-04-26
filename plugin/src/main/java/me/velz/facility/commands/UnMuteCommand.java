@@ -21,7 +21,7 @@ public class UnMuteCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.commands.unmute")) {
+        if (!cs.hasPermission("facility.command.unmute")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }

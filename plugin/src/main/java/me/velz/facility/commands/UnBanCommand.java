@@ -21,7 +21,7 @@ public class UnBanCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.commands.unban")) {
+        if (!cs.hasPermission("facility.command.unban")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }

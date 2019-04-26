@@ -52,7 +52,7 @@ public class ChatListener implements Listener {
         //<editor-fold defaultstate="collapsed" desc="Build Message">
         String message = ChatColor.translateAlternateColorCodes('&', plugin.getFileManager().getChatFormat())
                 .replaceAll("%player", "%s")
-                .replaceAll("%prefix", plugin.getImplementations().getVault().getChat().getPlayerPrefix(event.getPlayer()));
+                .replaceAll("%prefix", ChatColor.translateAlternateColorCodes('&', plugin.getImplementations().getVault().getChat().getPlayerPrefix(event.getPlayer())));
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             message = PlaceholderAPI.setPlaceholders(event.getPlayer(), message);
         }

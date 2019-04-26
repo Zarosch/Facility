@@ -23,17 +23,19 @@ public class SQLiteDatabase implements Database {
     //<editor-fold defaultstate="collapsed" desc="constructor">
     public SQLiteDatabase(Facility plugin) {
         this.plugin = plugin;
-        try {
-            Class.forName("org.sqlite.JDBC");
-            this.connection = DriverManager.getConnection("jdbc:sqlite:plugins/Facility/database.db");
-            Statement statement = this.connection.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid TEXT PRIMARY KEY, name TEXT, money DOUBLE, token DOUBLE, playtime INTEGER, firstJoin INTEGER, lastJoin INTEGER, ban TEXT, mute TEXT)");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name TEXT PRIMARY KEY, world TEXT, x DOUBLE, y REAL, z REAL, yaw REAL, pitch REAL)");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY, name TEXT, uuid TEXT, world TEXT, x REAL, y REAL, z REAL, yaw REAL, pitch REAL)");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id INTEGER PRIMARY KEY, uuid TEXT, kit TEXT, expired INTEGER)");
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                Class.forName("org.sqlite.JDBC");
+                this.connection = DriverManager.getConnection("jdbc:sqlite:plugins/Facility/database.db");
+                Statement statement = this.connection.createStatement();
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid TEXT PRIMARY KEY, name TEXT, money DOUBLE, token DOUBLE, playtime INTEGER, firstJoin INTEGER, lastJoin INTEGER, ban TEXT, mute TEXT)");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name TEXT PRIMARY KEY, world TEXT, x DOUBLE, y REAL, z REAL, yaw REAL, pitch REAL)");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY, name TEXT, uuid TEXT, world TEXT, x REAL, y REAL, z REAL, yaw REAL, pitch REAL)");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id INTEGER PRIMARY KEY, uuid TEXT, kit TEXT, expired INTEGER)");
+            } catch (ClassNotFoundException | SQLException ex) {
+                Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
     //</editor-fold>
 
@@ -137,7 +139,7 @@ public class SQLiteDatabase implements Database {
             }
             ps.close();
             rs.close();
-            
+
             ps = connection.prepareStatement("SELECT * FROM homes WHERE uuid = ?");
             ps.setString(1, uuid);
             rs = ps.executeQuery();
@@ -427,5 +429,10 @@ public class SQLiteDatabase implements Database {
         }
     }
     //</editor-fold>
+
+    @Override
+    public void updateWarp(String name, Location location) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

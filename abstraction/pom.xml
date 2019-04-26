@@ -13,8 +13,9 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1_8_R3</version>
-            <scope>provided</scope>
+            <version>1_8_R2</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/spigot-1.8.8.jar</systemPath>
         </dependency>
     </dependencies>
     

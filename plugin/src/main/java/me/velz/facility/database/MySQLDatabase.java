@@ -19,22 +19,24 @@ import org.bukkit.entity.Player;
 
 public class MySQLDatabase implements Database {
 
-    private Facility plugin;
+    private final Facility plugin;
     private Connection connection;
 
     //<editor-fold defaultstate="collapsed" desc="constructor">
     public MySQLDatabase(Facility plugin) {
         this.plugin = plugin;
-        try {
-            this.connection = DriverManager.getConnection("jdbc:mysql://" + plugin.getFileManager().getDatabaseHost() + ":" + plugin.getFileManager().getDatabasePort() + "/" + plugin.getFileManager().getDatabaseDatabase() + "?autoReconnect=true", plugin.getFileManager().getDatabaseUser(), plugin.getFileManager().getDatabasePassword());
-            Statement statement = this.connection.createStatement();
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36), name VARCHAR(16), money DOUBLE, token DOUBLE, playtime BIGINT, firstJoin BIGINT, lastJoin BIGINT, ban VARCHAR(100), mute VARCHAR(100), UNIQUE KEY (uuid))");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name VARCHAR(32), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (name))");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id int NOT NULL AUTO_INCREMENT, name VARCHAR(32), uuid VARCHAR(36), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (id))");
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id int NOT NULL AUTO_INCREMENT, uuid VARCHAR(36), kit VARCHAR(100), expired BIGINT, UNIQUE KEY (id))");
-        } catch (SQLException ex) {
-            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                this.connection = DriverManager.getConnection("jdbc:mysql://" + plugin.getFileManager().getDatabaseHost() + ":" + plugin.getFileManager().getDatabasePort() + "/" + plugin.getFileManager().getDatabaseDatabase() + "?autoReconnect=true", plugin.getFileManager().getDatabaseUser(), plugin.getFileManager().getDatabasePassword());
+                Statement statement = this.connection.createStatement();
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36), name VARCHAR(16), money DOUBLE, token DOUBLE, playtime BIGINT, firstJoin BIGINT, lastJoin BIGINT, ban VARCHAR(100), mute VARCHAR(100), UNIQUE KEY (uuid))");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name VARCHAR(32), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (name))");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id int NOT NULL AUTO_INCREMENT, name VARCHAR(32), uuid VARCHAR(36), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (id))");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id int NOT NULL AUTO_INCREMENT, uuid VARCHAR(36), kit VARCHAR(100), expired BIGINT, UNIQUE KEY (id))");
+            } catch (SQLException ex) {
+                Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
     //</editor-fold>
 
@@ -447,5 +449,10 @@ public class MySQLDatabase implements Database {
         }
     }
     //</editor-fold>
+
+    @Override
+    public void updateWarp(String name, Location location) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

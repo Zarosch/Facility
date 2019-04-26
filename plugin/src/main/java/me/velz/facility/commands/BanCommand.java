@@ -47,7 +47,7 @@ public class BanCommand implements CommandExecutor {
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_BANNEDHOVER.getLocal().replaceAll("%punisher", cs.getName()).replaceAll("%time", "Permanent")).create()));
                 dbPlayer.setBan("BLOCKED;-1;" + reason);
                 dbPlayer.save();
-                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.ban") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.commands.ban"))).forEachOrdered((all) -> {
+                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.ban") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.command.ban"))).forEachOrdered((all) -> {
                     Facility.getInstance().getVersion().sendComponentMessage(all, component);
                 });
                 if (Bukkit.getPlayer(args[0]) != null) {

@@ -48,7 +48,7 @@ public class MuteCommand implements CommandExecutor {
                 dbPlayer.setMute("BLOCKED;-1;" + reason);
                 dbPlayer.save();
                 for (Player all : Bukkit.getOnlinePlayers()) {
-                    if (all.hasPermission("facility.broadcast.mute") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.commands.mute")) {
+                    if (all.hasPermission("facility.broadcast.mute") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.command.mute")) {
                         Facility.getInstance().getVersion().sendComponentMessage(all, component);
                     }
                 }

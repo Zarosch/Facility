@@ -15,7 +15,7 @@ public class KickCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.commands.kick")) {
+        if (!cs.hasPermission("facility.command.kick")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -43,7 +43,7 @@ public class KickCommand implements CommandExecutor {
         TextComponent component = new TextComponent(MessageUtil.PUNISH_KICKED.getLocal().replaceAll("%reason", reason).replaceAll("%name", target.getName()));
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_KICKEDHOVER.getLocal().replaceAll("%punisher", cs.getName())).create()));
         for (Player all : Bukkit.getOnlinePlayers()) {
-            if (all.hasPermission("facility.broadcast.kick") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.commands.kick")) {
+            if (all.hasPermission("facility.broadcast.kick") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.command.kick")) {
                 Facility.getInstance().getVersion().sendComponentMessage(all, component);
             }
         }

@@ -40,7 +40,7 @@ public class UnMuteCommand implements CommandExecutor {
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_UNMUTEDHOVER.getLocal().replaceAll("%punisher", cs.getName())).create()));
                 dbPlayer.setMute("OK");
                 dbPlayer.save();
-                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.unmute") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.commands.unmute"))).forEachOrdered((all) -> {
+                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.unmute") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.command.unmute"))).forEachOrdered((all) -> {
                     Facility.getInstance().getVersion().sendComponentMessage(all, component);
                 });
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_UNMUTE.getLocal());

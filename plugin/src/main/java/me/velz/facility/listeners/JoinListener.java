@@ -20,15 +20,20 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onAsyncPrePlayerLogin(AsyncPlayerPreLoginEvent event) {
-        //<editor-fold defaultstate="collapsed" desc="Insert player to database">
-        if (!plugin.getDatabase().issetUser(event.getUniqueId().toString())) {
-            plugin.getDatabase().insertUser(event.getUniqueId().toString(), event.getName());
+        if (plugin.getDatabase().getConnection() == null) {
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage("§cPlease wait...");
+        } else {
+            //<editor-fold defaultstate="collapsed" desc="Insert player to database">
+            if (!plugin.getDatabase().issetUser(event.getUniqueId().toString())) {
+                plugin.getDatabase().insertUser(event.getUniqueId().toString(), event.getName());
+            }
+            //</editor-fold>
+            //<editor-fold defaultstate="collapsed" desc="Load player from database">
+            DatabasePlayer dbPlayer = plugin.getDatabase().loadUser(event.getUniqueId().toString(), event.getName());
+            plugin.getPlayers().put(event.getUniqueId().toString(), dbPlayer);
+            //</editor-fold>
         }
-        //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Load player from database">
-        DatabasePlayer dbPlayer = plugin.getDatabase().loadUser(event.getUniqueId().toString(), event.getName());
-        plugin.getPlayers().put(event.getUniqueId().toString(), dbPlayer);
-        //</editor-fold>
     }
 
     @EventHandler

@@ -40,6 +40,10 @@ public class HomeCommand implements CommandExecutor {
             home = "home";
         }
         if(args.length >= 2) {
+            if(!player.hasPermission("facility.command.home.other")) {
+                player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
+                return true;
+            }
             uuid = plugin.getDatabase().getUUID(args[1]);
             if(uuid == null) {
                 player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_PLAYERNOTFOUND.getLocal());

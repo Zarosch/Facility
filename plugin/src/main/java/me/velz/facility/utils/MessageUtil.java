@@ -5,7 +5,7 @@ import lombok.Getter;
 public enum MessageUtil {
 
     // Prefix Messages
-    PREFIX("§7┃ §3Padoria §7┃ "),
+    PREFIX("§8[§3Facility§8] "),
     // Error Messages
     ERROR_NOPERMISSIONS("§cDazu hast du keine Berechtigung."),
     ERROR_PLAYERONLY("§cDieser Befehl kann nur von einem Spieler genutzt werden."),
@@ -237,7 +237,7 @@ public enum MessageUtil {
     FACILITY_RELOAD("§6Alle Konfigurationen wurden neugeladen.");
 
     @Getter
-    private String local;
+    private String local, english, german;
 
     private MessageUtil(String local) {
         this.local = local;

@@ -55,6 +55,9 @@ public class Version_1_13_R2 implements Version {
         if (sound.equalsIgnoreCase("BLOCK_NOTE_BELL")) {
             return Sound.BLOCK_NOTE_BLOCK_BELL;
         }
+        if (sound.equalsIgnoreCase("BLOCK_NOTE_PLING")) {
+            return Sound.BLOCK_NOTE_BLOCK_PLING;
+        }
         return Sound.valueOf(sound);
     }
 

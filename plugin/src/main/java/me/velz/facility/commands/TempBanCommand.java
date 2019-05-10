@@ -47,6 +47,7 @@ public class TempBanCommand implements CommandExecutor {
                 TextComponent component = new TextComponent(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_BANNEDBROADCAST.getLocal().replaceAll("%reason", reason).replaceAll("%name", args[0]));
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_BANNEDHOVER.getLocal().replaceAll("%punisher", cs.getName()).replaceAll("%time", args[1])).create()));
                 dbPlayer.setBan("BLOCKED;" + (time + System.currentTimeMillis()) + ";" + reason);
+                dbPlayer.save();
                 Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.ban") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.commands.ban"))).forEachOrdered((all) -> {
                     Facility.getInstance().getVersion().sendComponentMessage(all, component);
                 });

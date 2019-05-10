@@ -32,24 +32,36 @@ public class HomeCommand implements CommandExecutor {
         }
 
         final Player player = (Player) cs;
+        final String uuid;
         final String home;
         if (args.length == 1) {
             home = args[0];
         } else {
             home = "home";
         }
+        if(args.length >= 2) {
+            uuid = plugin.getDatabase().getUUID(args[1]);
+            if(uuid == null) {
+                player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_PLAYERNOTFOUND.getLocal());
+                return true;
+            }
+        } else {
+            uuid = player.getUniqueId().toString();
+        }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
+            final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(uuid);
             if (!dbPlayer.getHomes().containsKey(home)) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_NOTFOUND.getLocal());
             } else {
                 final Location loc = dbPlayer.getHomes().get(home);
-                if (player.hasPermission("facility.bypass.teleportdelay")) {
-                    player.teleport(loc);
-                    cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_TELEPORT.getLocal().replaceAll("%home", home));
-                } else {
-                    new FacilityTeleport(player, loc, MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_TELEPORT.getLocal().replaceAll("%home", home), plugin.getFileManager().getTeleportDelay());
-                }
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (player.hasPermission("facility.bypass.teleportdelay")) {
+                        player.teleport(loc);
+                        cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_TELEPORT.getLocal().replaceAll("%home", home));
+                    } else {
+                        new FacilityTeleport(player, loc, MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_TELEPORT.getLocal().replaceAll("%home", home), plugin.getFileManager().getTeleportDelay());
+                    }
+                });
             }
         });
         return true;

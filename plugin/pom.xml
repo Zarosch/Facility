@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1_13_R2</version>
+            <version>1_14_R2</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/spigot-1.14.jar</systemPath>
         </dependency>

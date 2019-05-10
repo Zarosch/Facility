@@ -54,6 +54,12 @@ public class Version_1_13_R1 implements Version {
 
     @Override
     public Sound getSound(String sound) {
+        if (sound.equalsIgnoreCase("BLOCK_NOTE_BELL")) {
+            return Sound.BLOCK_NOTE_BLOCK_BELL;
+        }
+        if (sound.equalsIgnoreCase("BLOCK_NOTE_PLING")) {
+            return Sound.BLOCK_NOTE_BLOCK_PLING;
+        }
         return Sound.valueOf(sound);
     }
 

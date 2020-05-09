@@ -32,9 +32,14 @@ public class TeamchatCommand implements CommandExecutor {
                 message = message + " " + msg;
             }
             message = message.substring(1, message.length());
+            String prefix = "";
+            if(plugin.getImplementations().getVault() != null) {
+                prefix = plugin.getImplementations().getVault().getChat().getPlayerPrefix((Player)cs);
+            }
+            
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player.hasPermission("facility.command.teamchat")) {
-                    player.sendMessage(MessageUtil.CHAT_TEAMCHAT.getLocal().replaceAll("%player", ChatColor.translateAlternateColorCodes('&', plugin.getImplementations().getVault().getChat().getPlayerPrefix(player)) + cs.getName()).replaceAll("%message", message));
+                    player.sendMessage(MessageUtil.CHAT_TEAMCHAT.getLocal().replaceAll("%player", ChatColor.translateAlternateColorCodes('&', prefix) + cs.getName()).replaceAll("%message", message));
                 }
             }
         }

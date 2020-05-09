@@ -33,33 +33,33 @@ public class ItemBuilder {
         return this;
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="setDurability">
     public ItemBuilder setDurability(short durability) {
         this.durability = durability;
         return this;
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="setColor">
     public ItemBuilder setColor(Color color) {
         this.color = color;
         return this;
     }
-    
+
     public ItemBuilder setColor(Integer color) {
         this.color = Color.fromRGB(color);
         return this;
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="setDisplayName">
     public ItemBuilder setDisplayName(String displayname) {
         this.displayname = ChatColor.translateAlternateColorCodes('&', displayname);
         return this;
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="fromItemStack">
     public ItemBuilder fromItemStack(ItemStack is) {
         amount = is.getAmount();
@@ -86,7 +86,7 @@ public class ItemBuilder {
         return this;
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="addEnchantment">
     public ItemBuilder addEnchantment(Enchantment enchant, int level, boolean save) {
         if (save) {
@@ -125,14 +125,14 @@ public class ItemBuilder {
         return this;
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="setSoulbound">
     public ItemBuilder setSoulbound(boolean soulbound) {
         this.soulbound = soulbound;
         return this;
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="getPossibleEnchantments">
     public static List<Enchantment> getPossibleEnchantments(ItemStack stack) {
         List<Enchantment> possible = new ArrayList<>();
@@ -167,10 +167,10 @@ public class ItemBuilder {
         if (lore != null) {
             im.setLore(lore);
         }
-        if (unbreakable) {
-            im.spigot().setUnbreakable(true);
-        }
         is.setItemMeta(im);
+        if (unbreakable) {
+            Facility.getInstance().getVersion().setUnbreakable(is, true);
+        }
         if (owner != null) {
             SkullMeta sm = (SkullMeta) is.getItemMeta();
             sm.setOwner(owner);

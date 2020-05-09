@@ -17,6 +17,7 @@ public class FunctionManager {
         functions.add(new BroadcastFunction());
         functions.add(new ArmorstandFunction());
         functions.add(new CommandFunction());
+        functions.add(new InventoryFunction());
 
         functions.forEach((function) -> {
             function.onEnable();

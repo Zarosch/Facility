@@ -38,6 +38,9 @@ public class SetHomeCommand implements CommandExecutor {
         }
         Bukkit.getScheduler().runTaskAsynchronously(Facility.getInstance(), () -> {
             final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
+            if(dbPlayer.getHomes().containsKey(home)) {
+                dbPlayer.deleteHome(home);
+            }
             dbPlayer.addHome(home, player.getLocation());
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_SET.getLocal().replaceAll("%home", home));
         });

@@ -19,7 +19,7 @@ public class EnchantmentTableCommand implements CommandExecutor {
             return true;
         }
         Player player = (Player) cs;
-        player.openEnchanting(null, true);
+        player.openEnchanting(player.getLocation(), true);
         player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_ENCHANTMENTTABLE.getLocal());
         return true;
     }

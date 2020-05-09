@@ -1,10 +1,14 @@
 package me.velz.facility.objects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 
 public class FacilityInventoryItem {
+    
+    @Getter
+    private final String id;
     
     @Getter
     private final ItemStack item;
@@ -16,12 +20,14 @@ public class FacilityInventoryItem {
     private final String permission;
     
     @Getter
-    private final ArrayList<String> actions = new ArrayList<>();
+    private final HashMap<String, ArrayList<String>> actions;
 
-    public FacilityInventoryItem(ItemStack item, Integer slot, String permission) {
+    public FacilityInventoryItem(String id, ItemStack item, Integer slot, String permission, HashMap<String, ArrayList<String>> actions) {
+        this.id = id;
         this.item = item;
         this.slot = slot;
         this.permission = permission;
+        this.actions = actions;
     }
     
 }

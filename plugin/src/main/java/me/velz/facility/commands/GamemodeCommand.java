@@ -23,22 +23,22 @@ public class GamemodeCommand implements CommandExecutor {
         if (args.length == 1) {
             if (cs instanceof Player) {
                 Player player = (Player) cs;
-                if (args[0].equalsIgnoreCase("0") || args[0].equalsIgnoreCase("survival")) {
+                if (args[0].equalsIgnoreCase("0") || args[0].equalsIgnoreCase("survival") || args[0].equalsIgnoreCase("s")) {
                     player.setGameMode(GameMode.SURVIVAL);
                     cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_GAMEMODE_SELF_SURVIVAL.getLocal());
                     return true;
                 }
-                if (args[0].equalsIgnoreCase("1") || args[0].equalsIgnoreCase("creative")) {
+                if (args[0].equalsIgnoreCase("1") || args[0].equalsIgnoreCase("creative") || args[0].equalsIgnoreCase("c")) {
                     player.setGameMode(GameMode.CREATIVE);
                     cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_GAMEMODE_SELF_CREATIVE.getLocal());
                     return true;
                 }
-                if (args[0].equalsIgnoreCase("2") || args[0].equalsIgnoreCase("adventure")) {
+                if (args[0].equalsIgnoreCase("2") || args[0].equalsIgnoreCase("adventure") || args[0].equalsIgnoreCase("a")) {
                     player.setGameMode(GameMode.ADVENTURE);
                     cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_GAMEMODE_SELF_ADVENTURE.getLocal());
                     return true;
                 }
-                if (args[0].equalsIgnoreCase("3") || args[0].equalsIgnoreCase("spectator")) {
+                if (args[0].equalsIgnoreCase("3") || args[0].equalsIgnoreCase("spectator") || args[0].equalsIgnoreCase("spec")) {
                     player.setGameMode(GameMode.SPECTATOR);
                     cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_GAMEMODE_SELF_SPECTATOR.getLocal());
                     return true;
@@ -58,22 +58,22 @@ public class GamemodeCommand implements CommandExecutor {
                 return true;
             }
             Player player = Bukkit.getPlayer(args[1]);
-            if (args[0].equalsIgnoreCase("0") || args[0].equalsIgnoreCase("survival")) {
+            if (args[0].equalsIgnoreCase("0") || args[0].equalsIgnoreCase("survival") || args[0].equalsIgnoreCase("s")) {
                 player.setGameMode(GameMode.SURVIVAL);
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_GAMEMODE_OTHER_SURVIVAL.getLocal().replaceAll("%player", player.getName()));
                 return true;
             }
-            if (args[0].equalsIgnoreCase("1") || args[0].equalsIgnoreCase("creative")) {
+            if (args[0].equalsIgnoreCase("1") || args[0].equalsIgnoreCase("creative") || args[0].equalsIgnoreCase("c")) {
                 player.setGameMode(GameMode.CREATIVE);
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_GAMEMODE_OTHER_CREATIVE.getLocal().replaceAll("%player", player.getName()));
                 return true;
             }
-            if (args[0].equalsIgnoreCase("2") || args[0].equalsIgnoreCase("adventure")) {
+            if (args[0].equalsIgnoreCase("2") || args[0].equalsIgnoreCase("adventure") || args[0].equalsIgnoreCase("a")) {
                 player.setGameMode(GameMode.ADVENTURE);
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_GAMEMODE_OTHER_ADVENTURE.getLocal().replaceAll("%player", player.getName()));
                 return true;
             }
-            if (args[0].equalsIgnoreCase("3") || args[0].equalsIgnoreCase("spectator")) {
+            if (args[0].equalsIgnoreCase("3") || args[0].equalsIgnoreCase("spectator") || args[0].equalsIgnoreCase("spec")) {
                 player.setGameMode(GameMode.SPECTATOR);
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_GAMEMODE_OTHER_SPECTATOR.getLocal().replaceAll("%player", player.getName()));
                 return true;

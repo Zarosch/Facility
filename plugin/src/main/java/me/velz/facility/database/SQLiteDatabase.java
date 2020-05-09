@@ -28,8 +28,10 @@ public class SQLiteDatabase implements Database {
                 Class.forName("org.sqlite.JDBC");
                 this.connection = DriverManager.getConnection("jdbc:sqlite:plugins/Facility/database.db");
                 Statement statement = this.connection.createStatement();
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid TEXT PRIMARY KEY, name TEXT, money DOUBLE, token DOUBLE, playtime INTEGER, firstJoin INTEGER, lastJoin INTEGER, ban TEXT, mute TEXT)");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid TEXT PRIMARY KEY, name TEXT, groupname TEXT, money DOUBLE, token DOUBLE, playtime INTEGER, firstJoin INTEGER, lastJoin INTEGER, ban TEXT, mute TEXT)");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players_meta (id INTEGER PRIMARY KEY, uuid TEXT, key TEXT, value TEXT)");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name TEXT PRIMARY KEY, world TEXT, x DOUBLE, y REAL, z REAL, yaw REAL, pitch REAL)");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS playerwarps (name TEXT PRIMARY KEY, owner TEXT, expires INTEGER, world TEXT, x REAL, y REAL, z REAL, yaw REAL, pitch REAL)");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY, name TEXT, uuid TEXT, world TEXT, x REAL, y REAL, z REAL, yaw REAL, pitch REAL)");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id INTEGER PRIMARY KEY, uuid TEXT, kit TEXT, expired INTEGER)");
                 loadWarps();
@@ -76,16 +78,24 @@ public class SQLiteDatabase implements Database {
     @Override
     public void insertUser(String uuid, String name) {
         try {
-            PreparedStatement ps = this.getConnection().prepareStatement("INSERT INTO players (uuid, name, money, token, playtime, firstJoin, lastJoin, ban, mute) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            String group = "";
+            if(plugin.getImplementations().getVault() != null) {
+                if(Bukkit.getPlayer(name) != null) {
+                    group = plugin.getImplementations().getVault().getPermission().getPlayerGroups(Bukkit.getPlayer(name))[0];
+                }
+            }
+            
+            PreparedStatement ps = this.getConnection().prepareStatement("INSERT INTO players (uuid, name, group, money, token, playtime, firstJoin, lastJoin, ban, mute) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             ps.setString(1, uuid);
             ps.setString(2, name);
-            ps.setDouble(3, 0.0);
+            ps.setString(3, group);
             ps.setDouble(4, 0.0);
-            ps.setLong(5, 0);
-            ps.setLong(6, System.currentTimeMillis());
+            ps.setDouble(5, 0.0);
+            ps.setLong(6, 0);
             ps.setLong(7, System.currentTimeMillis());
-            ps.setString(8, "OK");
+            ps.setLong(8, System.currentTimeMillis());
             ps.setString(9, "OK");
+            ps.setString(10, "OK");
             ps.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,6 +142,7 @@ public class SQLiteDatabase implements Database {
                 dbPlayer.setPlaytime(rs.getInt("playtime"));
                 dbPlayer.setBan(rs.getString("ban"));
                 dbPlayer.setMute(rs.getString("mute"));
+                dbPlayer.setGroup(rs.getString("groupname"));
                 dbPlayer.setUuid(uuid);
                 dbPlayer.setSuccess(true);
                 if (Bukkit.getPlayer(UUID.fromString(uuid)) != null) {
@@ -150,6 +161,15 @@ public class SQLiteDatabase implements Database {
             }
             ps.close();
             rs.close();
+            
+            ps = connection.prepareStatement("SELECT * FROM players_meta WHERE uuid = ?");
+            ps.setString(1, uuid);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                dbPlayer.getMeta().put(rs.getString("key"), rs.getString("value"));
+            }
+            ps.close();
+            rs.close();
         } catch (SQLException ex) {
             Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -161,16 +181,24 @@ public class SQLiteDatabase implements Database {
     @Override
     public void saveUser(String uuid, DatabasePlayer dbPlayer) {
         try {
-            PreparedStatement ps = getConnection().prepareStatement("UPDATE players SET firstJoin=?, lastJoin=?, money=?, name=?, playtime=?, ban=?, mute=?, token=? WHERE uuid = ?");
+            String group = dbPlayer.getGroup();
+            if(plugin.getImplementations().getVault() != null) {
+                if(Bukkit.getPlayer(dbPlayer.getName()) != null) {
+                    group = plugin.getImplementations().getVault().getPermission().getPlayerGroups(Bukkit.getPlayer(dbPlayer.getGroup()))[0];
+                }
+            }
+            
+            PreparedStatement ps = getConnection().prepareStatement("UPDATE players SET firstJoin=?, lastJoin=?, money=?, name=?, groupname=?, playtime=?, ban=?, mute=?, token=? WHERE uuid = ?");
             ps.setLong(1, dbPlayer.getFirstJoin());
             ps.setLong(2, dbPlayer.getLastJoin());
             ps.setDouble(3, dbPlayer.getMoney());
             ps.setString(4, dbPlayer.getName());
-            ps.setInt(5, dbPlayer.getPlaytime());
-            ps.setString(6, dbPlayer.getBan());
-            ps.setString(7, dbPlayer.getMute());
-            ps.setDouble(8, dbPlayer.getToken());
-            ps.setString(9, uuid);
+            ps.setString(5, group);
+            ps.setInt(6, dbPlayer.getPlaytime());
+            ps.setString(7, dbPlayer.getBan());
+            ps.setString(8, dbPlayer.getMute());
+            ps.setDouble(9, dbPlayer.getToken());
+            ps.setString(10, uuid);
             ps.executeUpdate();
             ps.close();
         } catch (SQLException ex) {
@@ -431,9 +459,72 @@ public class SQLiteDatabase implements Database {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="addMetadata(uuid, key, value)">
     @Override
-    public void updateWarp(String name, Location location) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void addMetadata(String uuid, String key, String value) {
+        PreparedStatement ps;
+        ResultSet rs;
+        try {
+            String query = "SELECT * from players_meta WHERE key = ? AND uuid = ?";
+            ps = this.connection.prepareStatement(query);
+            ps.setString(1, key);
+            ps.setString(2, uuid);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                query = "UPDATE players_meta SET value = ? WHERE key = ? AND uuid = ?";
+                ps = connection.prepareStatement(query);
+                ps.setString(1, value);
+                ps.setString(2, key);
+                ps.setString(3, uuid);
+                ps.executeUpdate();
+                ps.close();
+            } else {
+                query = "INSERT INTO players_meta (uuid,key,value) VALUES (?, ?, ?)";
+                ps = connection.prepareStatement(query);
+                ps.setString(1, uuid);
+                ps.setString(2, key);
+                ps.setString(3, value);
+                ps.executeUpdate();
+                ps.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="removeMetadata(uuid, key)">
+    @Override
+    public void removeMetadata(String uuid, String key) {
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("DELETE FROM players_meta WHERE uuid = ? and key = ?");
+            ps.setString(1, uuid);
+            ps.setString(2, key);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="getMetadata(uuid, key)">
+    @Override
+    public String getMetadata(String uuid, String key) {
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("SELECT * FROM players_meta WHERE uuid = ? and key = ?");
+            ps.setString(1, uuid);
+            ps.setString(2, key);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getString("value");
+            }
+            ps.close();
+            rs.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    //</editor-fold>
 
 }

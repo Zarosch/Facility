@@ -10,7 +10,7 @@ public class DatabasePlayer {
 
     @Getter
     @Setter
-    private String uuid, name, ban, mute;
+    private String uuid, name, ban, mute, group;
     
     @Getter
     @Setter
@@ -30,6 +30,9 @@ public class DatabasePlayer {
     
     @Getter
     private final HashMap<String, Location> homes = new HashMap<>();
+    
+    @Getter
+    private final HashMap<String, String> meta = new HashMap<>();
 
     public DatabasePlayer(String uuid, String name) {
         this.uuid = uuid;

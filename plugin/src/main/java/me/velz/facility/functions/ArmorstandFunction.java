@@ -9,7 +9,9 @@ import me.velz.facility.utils.Actions;
 import me.velz.facility.utils.FileBuilder;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
@@ -37,6 +39,7 @@ public class ArmorstandFunction implements Function, Listener {
     @Override
     public void onReload() {
         this.getArmorstands().clear();
+        config = new FileBuilder(Facility.getInstance().getDataFolder().getPath() + "/functions", "armorstand.function.yml");
         if (!this.getConfig().getConfiguration().contains("armorstands")) {
             this.getConfig().addDefault("armorstands.default.name", "&eTest");
             this.getConfig().addDefault("armorstands.default.permission", "armorstand.test");
@@ -71,11 +74,13 @@ public class ArmorstandFunction implements Function, Listener {
         for (FacilityArmorstand armorStand : this.getArmorstands().values()) {
             if (armorStand.getName().equalsIgnoreCase(event.getRightClicked().getName())) {
                 if (event.getPlayer().hasPermission(armorStand.getPermission())) {
-                    for (String action : armorStand.getActions()) {
-                        Actions.run(event.getPlayer(), action);
+                    if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                        for (String action : armorStand.getActions()) {
+                            Actions.run(event.getPlayer(), action);
+                        }
+                        event.setCancelled(true);
                     }
                 }
-                event.setCancelled(true);
             }
         }
     }
@@ -89,13 +94,19 @@ public class ArmorstandFunction implements Function, Listener {
             for (FacilityArmorstand armorStand : this.getArmorstands().values()) {
                 if (armorStand.getName().equalsIgnoreCase(event.getRightClicked().getName())) {
                     if (event.getPlayer().hasPermission(armorStand.getPermission())) {
-                        for (String action : armorStand.getActions()) {
-                            Actions.run(event.getPlayer(), action);
+                        if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                            for (String action : armorStand.getActions()) {
+                                Actions.run(event.getPlayer(), action);
+                            }
+                            event.setCancelled(true);
                         }
                     }
-                    event.setCancelled(true);
                 }
             }
         }
+    }
+
+    @Override
+    public void onAction(Player player, String action, String message) {
     }
 }

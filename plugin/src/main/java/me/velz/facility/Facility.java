@@ -2,6 +2,8 @@ package me.velz.facility;
 
 import java.util.HashMap;
 import lombok.Getter;
+import me.velz.facility.arenas.FacilityArenaManager;
+import me.velz.facility.commands.ArenaCommand;
 import me.velz.facility.commands.BanCommand;
 import me.velz.facility.commands.BlockPhysicsCommand;
 import me.velz.facility.commands.BoatCommand;
@@ -9,6 +11,7 @@ import me.velz.facility.commands.BroadcastCommand;
 import me.velz.facility.commands.ClearChatCommand;
 import me.velz.facility.commands.ClearinvCommand;
 import me.velz.facility.commands.CreateKitCommand;
+import me.velz.facility.commands.DebugmetaCommand;
 import me.velz.facility.commands.DelHomeCommand;
 import me.velz.facility.commands.DelWarpCommand;
 import me.velz.facility.commands.DeleteKitCommand;
@@ -123,8 +126,11 @@ public class Facility extends JavaPlugin {
     @Getter
     private final HashMap<String, FacilityKit> kits = new HashMap();
 
-    @Getter
+    @Getter 
     private final FunctionManager functionManager = new FunctionManager(this);
+    
+    @Getter
+    private final FacilityArenaManager arenaManager = new FacilityArenaManager(this);
 
     @Getter
     private final VersionMatcher versionMatcher = new VersionMatcher();
@@ -150,6 +156,14 @@ public class Facility extends JavaPlugin {
         this.loadListener();
         this.loadCommands();
         this.getFunctionManager().load();
+        this.loadArena();
+    }
+    
+    private void loadArena() {
+        if(this.getFileManager().isArenaEnabled()) {
+            getCommand("arena").setExecutor(new ArenaCommand(this));
+            this.getArenaManager().load();
+        }
     }
 
     private void loadListener() {
@@ -162,6 +176,7 @@ public class Facility extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new RespawnListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ServerListPingListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SignListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new WarpListCommand(this), this);
     }
 
     private void loadCommands() {
@@ -240,6 +255,7 @@ public class Facility extends JavaPlugin {
         getCommand("createkit").setExecutor(new CreateKitCommand(this));
         getCommand("deletekit").setExecutor(new DeleteKitCommand(this));
         getCommand("trash").setExecutor(new TrashCommand());
+        getCommand("debugmeta").setExecutor(new DebugmetaCommand(this));
     }
 
     private void schedul() {

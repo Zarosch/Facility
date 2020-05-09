@@ -5,6 +5,9 @@ api-version: 1.13
 main: me.velz.facility.Facility
 softdepend: [PlaceholderAPI, Vault]
 commands:
+    arena:
+        description: Arena Command
+        aliases: [a]
     blockphysics:
         description: Toggle Blockphysics
         aliases: [tbs]
@@ -182,3 +185,8 @@ commands:
     trash:
         description: Trash Command
         aliases: [müll]
+    inventory:
+        description: Inventory Command
+        aliases: [inv, inventar]
+    debugmeta:
+        description: Debugmeta Command

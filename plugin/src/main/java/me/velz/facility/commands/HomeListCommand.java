@@ -48,7 +48,7 @@ public class HomeListCommand implements CommandExecutor {
                     uuid = player.getUniqueId().toString();
                 }
 
-                final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
+                final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(uuid);
                 if (dbPlayer.getHomes().isEmpty()) {
                     cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_NOHOMES.getLocal());
                 } else {

@@ -86,8 +86,8 @@ public class JoinListener implements Listener {
         //<editor-fold defaultstate="collapsed" desc="Chat Motd">
         event.getPlayer().sendMessage(MessageUtil.CHAT_MOTD.getLocal().replaceAll("%player", event.getPlayer().getName()));
         //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="Teleport players they not before joined to Spawn">
-        if (!event.getPlayer().hasPlayedBefore()) {
+        //<editor-fold defaultstate="collapsed" desc="Teleport players they not before joined to Spawn OR when Teleport to Spawn On Join is enabled">
+        if (!event.getPlayer().hasPlayedBefore() || plugin.getFileManager().isTeleportToSpawnOnJoin()) {
             if (plugin.getFileManager().getSpawnLocation() != null) {
                 event.getPlayer().teleport(plugin.getFileManager().getSpawnLocation());
             }

@@ -31,6 +31,9 @@ public class FacilityCommand implements CommandExecutor {
             plugin.getFileManager().load();
             MessageUtil.load();
             plugin.getFunctionManager().reload();
+            if(plugin.getFileManager().isArenaEnabled()) {
+                plugin.getArenaManager().load();
+            }
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.FACILITY_RELOAD.getLocal());
             return true;
         }

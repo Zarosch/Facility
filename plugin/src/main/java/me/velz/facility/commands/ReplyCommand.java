@@ -11,13 +11,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 public class ReplyCommand implements CommandExecutor {
-    
+
     private final Facility plugin;
 
     public ReplyCommand(Facility plugin) {
         this.plugin = plugin;
     }
-    
+
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
         if (!cs.hasPermission("facility.command.msg")) {
@@ -43,6 +43,11 @@ public class ReplyCommand implements CommandExecutor {
             message = message + " " + msg;
         }
         message = message.substring(1, message.length());
+        if (!MsgCommand.getSOCIALSPY().isEmpty()) {
+            for (Player spyer : MsgCommand.getSOCIALSPY()) {
+                spyer.sendMessage(MessageUtil.CHAT_SOCIALSPY_MSG.getLocal().replaceAll("%player", cs.getName()).replaceAll("%target", target.getName()).replaceAll("%message", message));
+            }
+        }
         cs.sendMessage(MessageUtil.CHAT_MSG_SELF.getLocal().replaceAll("%player", target.getName()).replaceAll("%message", message));
         target.sendMessage(MessageUtil.CHAT_MSG_TARGET.getLocal().replaceAll("%player", cs.getName()).replaceAll("%message", message));
         target.playSound(target.getLocation(), Facility.getInstance().getVersion().getSound("BLOCK_NOTE_BELL"), 1, 1);

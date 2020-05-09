@@ -60,16 +60,7 @@ public class WarpCommand implements CommandExecutor {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_TELEPORT_OTHER.getLocal().replaceAll("%player", target.getName()).replaceAll("%warp", args[0]));
             return true;
         }
-        if (!plugin.getWarps().isEmpty()) {
-            String warps = "";
-            for (String warp : plugin.getWarps().keySet()) {
-                warps = warps + warp + ", ";
-            }
-            warps = warps.substring(0, warps.length() - 2);
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_LIST.getLocal().replaceAll("%list", warps));
-        } else {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_NOWARPS.getLocal());
-        }
+        Bukkit.dispatchCommand((Player)cs, "warplist");
         return true;
     }
 

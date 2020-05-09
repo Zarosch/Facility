@@ -34,7 +34,7 @@ public class HomeCommand implements CommandExecutor {
         final Player player = (Player) cs;
         final String uuid;
         final String home;
-        if (args.length == 1) {
+        if (args.length >= 1) {
             home = args[0];
         } else {
             home = "home";

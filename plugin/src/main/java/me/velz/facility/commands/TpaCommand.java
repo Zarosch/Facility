@@ -53,8 +53,8 @@ public class TpaCommand implements CommandExecutor {
                     player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_ALREADY.getLocal());
                     return true;
                 }
-                facilityTpa.getPlayer1().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_CANCEL_PLAYER.getLocal());
-                facilityTpa.getPlayer2().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_CANCEL_TARGET.getLocal());
+                facilityTpa.getPlayer1().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_CANCEL_PLAYER.getLocal().replaceAll("%player", target.getName()));
+                facilityTpa.getPlayer2().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_CANCEL_TARGET.getLocal().replaceAll("%player", player.getName()));
                 this.getTpaStorage().remove(player);
             }
             player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_PLAYER.getLocal().replaceAll("%player", target.getName()));

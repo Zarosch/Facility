@@ -11,14 +11,12 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.velz.facility.Facility;
-import me.velz.facility.commands.DelWarpCommand;
-import me.velz.facility.commands.SetWarpCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class MySQLDatabase implements Database {
-
+    
     private final Facility plugin;
     private Connection connection;
 
@@ -29,8 +27,10 @@ public class MySQLDatabase implements Database {
             try {
                 this.connection = DriverManager.getConnection("jdbc:mysql://" + plugin.getFileManager().getDatabaseHost() + ":" + plugin.getFileManager().getDatabasePort() + "/" + plugin.getFileManager().getDatabaseDatabase() + "?autoReconnect=true", plugin.getFileManager().getDatabaseUser(), plugin.getFileManager().getDatabasePassword());
                 Statement statement = this.connection.createStatement();
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36), name VARCHAR(16), money DOUBLE, token DOUBLE, playtime BIGINT, firstJoin BIGINT, lastJoin BIGINT, ban VARCHAR(100), mute VARCHAR(100), UNIQUE KEY (uuid))");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36), name VARCHAR(16), groupname VARCHAR(16), money DOUBLE, token DOUBLE, playtime BIGINT, firstJoin BIGINT, lastJoin BIGINT, ban VARCHAR(100), mute VARCHAR(100), UNIQUE KEY (uuid))");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players_meta (id INT NOT NULL AUTO_INCREMENT, uuid VARCHAR(36), metakey VARCHAR(255), metavalue VARCHAR(255), UNIQUE KEY (id))");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name VARCHAR(32), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (name))");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS playerwarps (name VARCHAR(32), owner VARCHAR(36), expires INT NOT NULL, world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (name))");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id int NOT NULL AUTO_INCREMENT, name VARCHAR(32), uuid VARCHAR(36), world VARCHAR(32), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT, UNIQUE KEY (id))");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id int NOT NULL AUTO_INCREMENT, uuid VARCHAR(36), kit VARCHAR(100), expired BIGINT, UNIQUE KEY (id))");
                 loadWarps();
@@ -77,16 +77,24 @@ public class MySQLDatabase implements Database {
     @Override
     public void insertUser(String uuid, String name) {
         try {
-            PreparedStatement ps = this.getConnection().prepareStatement("INSERT INTO players (uuid, name, money, token, playtime, firstJoin, lastJoin, ban, mute) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            String group = "";
+            if(plugin.getImplementations().getVault() != null) {
+                if(Bukkit.getPlayer(name) != null) {
+                    group = plugin.getImplementations().getVault().getPermission().getPlayerGroups(Bukkit.getPlayer(name))[0];
+                }
+            }
+            
+            PreparedStatement ps = this.getConnection().prepareStatement("INSERT INTO players (uuid, name, groupname, money, token, playtime, firstJoin, lastJoin, ban, mute) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             ps.setString(1, uuid);
             ps.setString(2, name);
-            ps.setDouble(3, 0.0);
+            ps.setString(3, group);
             ps.setDouble(4, 0.0);
-            ps.setLong(5, 0);
-            ps.setLong(6, System.currentTimeMillis());
+            ps.setDouble(5, 0.0);
+            ps.setLong(6, 0);
             ps.setLong(7, System.currentTimeMillis());
-            ps.setString(8, "OK");
+            ps.setLong(8, System.currentTimeMillis());
             ps.setString(9, "OK");
+            ps.setString(10, "OK");
             ps.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
@@ -133,6 +141,7 @@ public class MySQLDatabase implements Database {
                 dbPlayer.setPlaytime(rs.getInt("playtime"));
                 dbPlayer.setBan(rs.getString("ban"));
                 dbPlayer.setMute(rs.getString("mute"));
+                dbPlayer.setGroup(rs.getString("groupname"));
                 dbPlayer.setUuid(uuid);
                 dbPlayer.setSuccess(true);
                 if (Bukkit.getPlayer(UUID.fromString(uuid)) != null) {
@@ -141,13 +150,22 @@ public class MySQLDatabase implements Database {
             }
             ps.close();
             rs.close();
-
-            ps = connection.prepareStatement("SELECT * FROM homes WHERE uuid = ?");
+            
+            ps = getConnection().prepareStatement("SELECT * FROM homes WHERE uuid = ?");
             ps.setString(1, uuid);
             rs = ps.executeQuery();
             while (rs.next()) {
                 Location loc = new Location(Bukkit.getWorld(rs.getString("world")), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getFloat("yaw"), rs.getFloat("pitch"));
                 dbPlayer.getHomes().put(rs.getString("name"), loc);
+            }
+            ps.close();
+            rs.close();
+            
+            ps = getConnection().prepareStatement("SELECT * FROM players_meta WHERE uuid = ?");
+            ps.setString(1, uuid);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                dbPlayer.getMeta().put(rs.getString("metakey"), rs.getString("metavalue"));
             }
             ps.close();
             rs.close();
@@ -162,16 +180,24 @@ public class MySQLDatabase implements Database {
     @Override
     public void saveUser(String uuid, DatabasePlayer dbPlayer) {
         try {
-            PreparedStatement ps = getConnection().prepareStatement("UPDATE players SET firstJoin=?, lastJoin=?, money=?, name=?, playtime=?, ban=?, mute=?, token=? WHERE uuid = ?");
+            String group = dbPlayer.getGroup();
+            if(plugin.getImplementations().getVault() != null) {
+                if(Bukkit.getPlayer(dbPlayer.getName()) != null) {
+                    group = plugin.getImplementations().getVault().getPermission().getPlayerGroups(Bukkit.getPlayer(dbPlayer.getGroup()))[0];
+                }
+            }
+            
+            PreparedStatement ps = getConnection().prepareStatement("UPDATE players SET firstJoin=?, lastJoin=?, money=?, name=?, groupname=?, playtime=?, ban=?, mute=?, token=? WHERE uuid = ?");
             ps.setLong(1, dbPlayer.getFirstJoin());
             ps.setLong(2, dbPlayer.getLastJoin());
             ps.setDouble(3, dbPlayer.getMoney());
             ps.setString(4, dbPlayer.getName());
-            ps.setInt(5, dbPlayer.getPlaytime());
-            ps.setString(6, dbPlayer.getBan());
-            ps.setString(7, dbPlayer.getMute());
-            ps.setDouble(8, dbPlayer.getToken());
-            ps.setString(9, uuid);
+            ps.setString(5, group);
+            ps.setInt(6, dbPlayer.getPlaytime());
+            ps.setString(7, dbPlayer.getBan());
+            ps.setString(8, dbPlayer.getMute());
+            ps.setDouble(9, dbPlayer.getToken());
+            ps.setString(10, uuid);
             ps.executeUpdate();
             ps.close();
         } catch (SQLException ex) {
@@ -425,7 +451,7 @@ public class MySQLDatabase implements Database {
                 ps.close();
             }
         } catch (SQLException ex) {
-            Logger.getLogger(SetWarpCommand.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     //</editor-fold>
@@ -446,14 +472,77 @@ public class MySQLDatabase implements Database {
                 ps.close();
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DelWarpCommand.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="addMetadata(uuid, key, value)">
     @Override
-    public void updateWarp(String name, Location location) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void addMetadata(String uuid, String key, String value) {
+        PreparedStatement ps;
+        ResultSet rs;
+        try {
+            String query = "SELECT * from players_meta WHERE key = ? AND uuid = ?";
+            ps = this.connection.prepareStatement(query);
+            ps.setString(1, key);
+            ps.setString(2, uuid);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                query = "UPDATE players_meta SET value = ? WHERE key = ? AND uuid = ?";
+                ps = connection.prepareStatement(query);
+                ps.setString(1, value);
+                ps.setString(2, key);
+                ps.setString(3, uuid);
+                ps.executeUpdate();
+                ps.close();
+            } else {
+                query = "INSERT INTO players_meta (uuid,key,value) VALUES (?, ?, ?)";
+                ps = connection.prepareStatement(query);
+                ps.setString(1, uuid);
+                ps.setString(2, key);
+                ps.setString(3, value);
+                ps.executeUpdate();
+                ps.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="removeMetadata(uuid, key)">
+    @Override
+    public void removeMetadata(String uuid, String key) {
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("DELETE FROM players_meta WHERE uuid = ? and key = ?");
+            ps.setString(1, uuid);
+            ps.setString(2, key);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="getMetadata(uuid, key)">
+    @Override
+    public String getMetadata(String uuid, String key) {
+        try {
+            PreparedStatement ps = getConnection().prepareStatement("SELECT * FROM players_meta WHERE uuid = ? and key = ?");
+            ps.setString(1, uuid);
+            ps.setString(2, key);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getString("value");
+            }
+            ps.close();
+            rs.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    //</editor-fold>
+    
 }

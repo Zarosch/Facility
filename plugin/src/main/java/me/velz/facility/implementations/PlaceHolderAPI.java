@@ -1,17 +1,18 @@
 package me.velz.facility.implementations;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.external.EZPlaceholderHook;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.velz.facility.Facility;
 import me.velz.facility.database.DatabasePlayer;
 import org.bukkit.entity.Player;
 
-public class PlaceHolderAPI extends EZPlaceholderHook {
+public class PlaceHolderAPI extends PlaceholderExpansion {
 
     private final Facility plugin;
 
     public PlaceHolderAPI(Facility plugin, String identifier) {
-        super(plugin, "facility");
         this.plugin = plugin;
     }
     
@@ -38,8 +39,34 @@ public class PlaceHolderAPI extends EZPlaceholderHook {
             if (identifier.equals("playtimedigitals")) {
                 return plugin.getTools().getPlaytimeDigis(dbPlayer.getPlaytime());
             }
+            if(identifier.startsWith("meta_")) {
+                return dbPlayer.getMeta().get(identifier.split("_")[1]);
+            }
+            if(identifier.equals("date_now")) {
+                return new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+            }
         }
         return null;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "facility";
+    }
+
+    @Override
+    public String getPlugin() {
+        return "Facility";
+    }
+
+    @Override
+    public String getAuthor() {
+        return "Zarosch";
+    }
+
+    @Override
+    public String getVersion() {
+        return "Version 1.0";
     }
 
 }

@@ -26,7 +26,7 @@ public class Implementations {
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             this.placeholderapi = new PlaceHolderAPI(Facility.getInstance(), "facility");
-            this.placeholderapi.hook();
+            this.placeholderapi.register();
         } else {
             System.out.println("[Facility] PlaceholderAPI was not found.");
         }

@@ -130,6 +130,9 @@ public class Version_1_12_R1 implements Version {
         if (material.equalsIgnoreCase("STONE_SPADE")) {
             return Material.STONE_SPADE;
         }
+        if(material.equalsIgnoreCase("SIGN")) {
+            return Material.SIGN;
+        }
         return null;
     }
 

@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import java.util.UUID;
 import me.velz.facility.Facility;
 import me.velz.facility.database.DatabasePlayer;
 import me.velz.facility.utils.MessageUtil;
@@ -7,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class SeenCommand implements CommandExecutor {
 
@@ -36,9 +38,11 @@ public class SeenCommand implements CommandExecutor {
                 } else {
                     lastSeen = Facility.getInstance().getTools().getDateAsString(dbPlayer.getLastJoin());
                 }
+              
                 cs.sendMessage(MessageUtil.PLAYER_SEEN_MESSAGE.getLocal()
                         .replaceAll("%playtime", Facility.getInstance().getTools().getPlaytime(dbPlayer.getPlaytime()))
                         .replaceAll("%money", dbPlayer.getMoney() + " " + MessageUtil.MONEYNAME.getLocal())
+                        .replaceAll("%group", dbPlayer.getGroup())
                         .replaceAll("%firstjoin", Facility.getInstance().getTools().getDateAsString(dbPlayer.getFirstJoin()))
                         .replaceAll("%lastjoin", lastSeen));
             } else {

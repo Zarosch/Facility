@@ -18,12 +18,15 @@ public class FileManager {
     public FileManager(Facility plugin) {
         this.plugin = plugin;
         config = new FileBuilder(plugin.getDataFolder().getPath(), "config.yml");
+        
         spawn = new FileBuilder(plugin.getDataFolder().getPath() + "/data", "spawn.yml");
         kits = new FileBuilder(plugin.getDataFolder().getPath() + "/data", "kits.yml");
+        arenas = new FileBuilder(plugin.getDataFolder().getPath() + "/data", "arenas.yml");
+        currencies = new FileBuilder(plugin.getDataFolder().getPath() + "/data", "currencies.yml");
+        punishments = new FileBuilder(plugin.getDataFolder().getPath() + "/", "punishments.yml");
         setDefaults();
         load();
     }
-    
     
     @Getter
     @Setter
@@ -36,14 +39,14 @@ public class FileManager {
     private Integer teleportDelay, broadcastTime, chatDelay, databasePort;
 
     @Getter
-    private boolean newbieBroadcastEnabled, broadcastEnabled, chatMention;
+    private boolean arenaEnabled, newbieBroadcastEnabled, broadcastEnabled, chatMention, teleportToSpawnOnJoin;
 
     @Getter
     @Setter
     private Location spawnLocation;
 
     @Getter
-    private final FileBuilder config, spawn, kits;
+    private final FileBuilder config, spawn, kits, currencies, arenas, punishments;
 
     public final void load() {
         this.getConfig().load();
@@ -55,6 +58,9 @@ public class FileManager {
         databasePassword = this.getConfig().getString("database.password");
         databaseDatabase = this.getConfig().getString("database.database");
         databaseType = this.getConfig().getString("database.type");
+        
+        // Arena
+        arenaEnabled = this.getConfig().getBoolean("arena.enabled");
 
         // Chat
         chatFormat = this.getConfig().getString("chat.format");
@@ -62,6 +68,7 @@ public class FileManager {
 
         // Teleport
         teleportDelay = this.getConfig().getInt("teleport.delay");
+        teleportToSpawnOnJoin = this.getConfig().getBoolean("teleport.toSpawnOnJoin");
 
         // Server Motd
         motds = new ArrayList<>();
@@ -84,6 +91,14 @@ public class FileManager {
             } catch (NullPointerException ex) {
                 System.out.println("[Facility] Error! Kit [" + kit + "] cannot be loaded.");
             }
+        });
+        
+        // Punishments
+        this.getPunishments().load();
+        this.getPunishments().addDefault("punishments.hacking.id", 1);
+        this.getPunishments().addDefault("punishments.hacking.actions", new String[] {
+            "command>tempban %player 30d Hacking"
+            
         });
 
         // Armorstands
@@ -111,12 +126,16 @@ public class FileManager {
         this.getConfig().addDefault("database.password", "123456");
         this.getConfig().addDefault("database.database", "Facility");
 
+        // Arena
+        this.getConfig().addDefault("arena.enabled", false);
+        
         // Chat
         this.getConfig().addDefault("chat.format", "%prefix%player &7>&7 %message");
         this.getConfig().addDefault("chat.mention", true);
 
         // Teleport
         this.getConfig().addDefault("teleport.delay", 3);
+        this.getConfig().addDefault("teleport.toSpawnOnJoin", false);
 
         this.getConfig().addDefault("newbie.kit", "newbie");
         this.getConfig().addDefault("newbie.warp", "newbie");
@@ -139,6 +158,14 @@ public class FileManager {
             this.getKits().addDefault("kits.newbie.items.axe", new ItemBuilder().setMaterial(Material.STONE_AXE).build());
             this.getKits().addDefault("kits.newbie.items.shovel", new ItemBuilder().setMaterial(Facility.getInstance().getVersion().getMaterial("STONE_SPADE")).build());
             this.getKits().save();
+        }
+        
+        if(!this.getCurrencies().getConfiguration().contains("currencies")) {
+            this.getCurrencies().addDefault("currencies.money.name", "money");
+            this.getCurrencies().addDefault("currencies.money.displayName", "Euro");
+            this.getCurrencies().addDefault("currencies.money.defaultBalance", 0);
+            this.getCurrencies().addDefault("currencies.money.prefix", "&8[&3Money&8] &6");
+            this.getCurrencies().save();
         }
     }
 

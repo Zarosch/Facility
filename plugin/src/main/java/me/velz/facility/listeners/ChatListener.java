@@ -50,9 +50,12 @@ public class ChatListener implements Listener {
         }
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Build Message">
-        String message = ChatColor.translateAlternateColorCodes('&', plugin.getFileManager().getChatFormat())
-                .replaceAll("%player", "%s")
-                .replaceAll("%prefix", ChatColor.translateAlternateColorCodes('&', plugin.getImplementations().getVault().getChat().getPlayerPrefix(event.getPlayer())));
+        String message = ChatColor.translateAlternateColorCodes('&', plugin.getFileManager().getChatFormat()).replaceAll("%player", "%s");
+        if(Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            message = message.replaceAll("%prefix", ChatColor.translateAlternateColorCodes('&', plugin.getImplementations().getVault().getChat().getPlayerPrefix(event.getPlayer())));
+        } else {
+            message = message.replaceAll("%prefix", "");
+        }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             message = PlaceholderAPI.setPlaceholders(event.getPlayer(), message);
         }

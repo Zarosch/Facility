@@ -153,7 +153,7 @@ public class ArenaCommand implements CommandExecutor {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ARENA_COMMAND_LIST.getLocal().replaceAll("%arenas", plugin.getArenaManager().getArenaList()));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ARENA_COMMAND_LIST_LIST.getLocal().replaceAll("%arenas", plugin.getArenaManager().getArenaList()));
             return true;
         }
         
@@ -220,7 +220,7 @@ public class ArenaCommand implements CommandExecutor {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ARENA_COMMAND_LISTMODES.getLocal().replaceAll("%modes", plugin.getArenaManager().getModeList()));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ARENA_COMMAND_LISTMODES_LIST.getLocal().replaceAll("%modes", plugin.getArenaManager().getModeList()));
             return true;
         }        
         if(args[0].equalsIgnoreCase("addloc")) {
@@ -286,7 +286,7 @@ public class ArenaCommand implements CommandExecutor {
                 return true;
             }
             FacilityArena arena = plugin.getArenaManager().getArenas().get(args[1]);
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ARENA_COMMAND_LISTLOCS.getLocal().replaceAll("%locs", plugin.getArenaManager().getLocationList(arena)));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ARENA_COMMAND_LISTLOCS_LIST.getLocal().replaceAll("%locs", plugin.getArenaManager().getLocationList(arena)));
             return true;
         }
         
@@ -380,7 +380,7 @@ public class ArenaCommand implements CommandExecutor {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ARENA_NOT_FOUND.getLocal());
                 return true;
             }
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ARENA_COMMAND_LISTSETTINGS.getLocal().replaceAll("%settings", plugin.getArenaManager().listSettings(args[1])));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ARENA_COMMAND_LISTSETTINGS_LIST.getLocal().replaceAll("%settings", plugin.getArenaManager().listSettings(args[1])));
             return true;
         }
                 

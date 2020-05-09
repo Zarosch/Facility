@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import lombok.Getter;
 import me.velz.facility.Facility;
+import me.velz.facility.utils.MessageUtil;
 import me.velz.facility.utils.PlayerSaveUtil;
 import org.bukkit.Location;
 
@@ -71,7 +72,7 @@ public class FacilityArenaManager {
     public String getLocationList(FacilityArena arena) {
         String str = "";
         if(arena.getLocations().isEmpty()) {
-            return "Keine Locations gesetzt";
+            return MessageUtil.ARENA_COMMAND_LISTLOCS_EMPTY.getLocal();
         }
         for(String loc : arena.getLocations().keySet()) {
             str = str + loc + ", ";
@@ -83,7 +84,7 @@ public class FacilityArenaManager {
     public String getArenaList() {
         String str = "";
         if(this.getArenas().isEmpty()) {
-            return "Keine Arenen gesetzt";
+            return MessageUtil.ARENA_COMMAND_LIST_EMPTY.getLocal();
         }
         for(String arena : this.getArenas().keySet()) {
             str = str + arena + ", ";
@@ -95,7 +96,7 @@ public class FacilityArenaManager {
     public String getModeList() {
         String str = "";
         if(this.getModes().isEmpty()) {
-            return "Keine Spielmodus gesetzt";
+            return MessageUtil.ARENA_COMMAND_LISTMODES_EMPTY.getLocal();
         }
         for(String mode : this.getModes().keySet()) {
             str = str + mode + ", ";
@@ -156,7 +157,7 @@ public class FacilityArenaManager {
         FacilityArena arena = this.arenas.get(id);
         String str = "";
         if(arena.getSettings().isEmpty()) {
-            return "Keine Settings gesetzt";
+            return MessageUtil.ARENA_COMMAND_LISTSETTINGS_EMPTY.getLocal();
         }
         for(String setting : arena.getSettings()) {
             str = str + setting + ", ";

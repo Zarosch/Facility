@@ -85,7 +85,7 @@ public class SQLiteDatabase implements Database {
                 }
             }
             
-            PreparedStatement ps = this.getConnection().prepareStatement("INSERT INTO players (uuid, name, group, money, token, playtime, firstJoin, lastJoin, ban, mute) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement ps = this.getConnection().prepareStatement("INSERT INTO players (uuid, name, groupname, money, token, playtime, firstJoin, lastJoin, ban, mute) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             ps.setString(1, uuid);
             ps.setString(2, name);
             ps.setString(3, group);

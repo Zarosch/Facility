@@ -64,11 +64,10 @@ public class BroadcastFunction implements Function {
     public void onReload() {
         this.getConfig().load();
         this.getConfig().addDefault("enabled", false);
-        this.getConfig().addDefault("time", 120);
+        this.getConfig().addDefault("time", 240);
         if (!getConfig().getConfiguration().contains("broadcasts")) {
-            this.getConfig().addDefault("broadcasts.default.message", new String[]{
-                "&8[&3Info&8] &6Ändere diesen Broadcast in der Facility/functions/broadcasts.function.yml Datei.",
-                "&8[&3Info&8] &eÄndere diesen Broadcast in der Facility/functions/broadcasts.function.yml Datei.",});
+            this.getConfig().addDefault("broadcasts.playtime.message", new String[]{"&8[&3Info&8] &6Mit &e/playtime &6kannst du deine Spielzeit sehen."});
+            this.getConfig().addDefault("broadcasts.ping.message", new String[]{"&8[&3Info&8] &6Mit &e/ping &6kannst du deinen Ping sehen."});
         }
         this.getConfig().save();
         this.setDuration(this.getConfig().getInt("time"));

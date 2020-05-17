@@ -51,10 +51,14 @@ public class Actions {
         if (action.equalsIgnoreCase("takeitem")) {
             // material;amount;displayname
             String[] item = message.split(";");
-            ItemStack stack;
+            ItemStack stack = null;
+            if(item.length == 1) {
+                stack = new ItemBuilder().setMaterial(Material.getMaterial(item[0])).setAmount(1).build();
+            }
             if (item.length == 2) {
                 stack = new ItemBuilder().setMaterial(Material.getMaterial(item[0])).setAmount(Integer.valueOf(item[1])).build();
-            } else {
+            }
+            if(item.length == 3) {
                 stack = new ItemBuilder().setDisplayName(ChatColor.translateAlternateColorCodes('&', item[2])).setMaterial(Material.getMaterial(item[0])).setAmount(Integer.valueOf(item[1])).build();
             }
             if (stack != null) {
@@ -65,6 +69,22 @@ public class Actions {
                     return "not_enough_items";
                 }
                 removeFromInventory(player.getInventory(), stack);
+            }
+        }
+        if(action.equalsIgnoreCase("giveitem")) {
+            String[] item = message.split(";");
+            ItemStack stack = null;
+            if(item.length == 1) {
+                stack = new ItemBuilder().setMaterial(Material.getMaterial(item[0])).setAmount(1).build();
+            }
+            if(item.length == 2) {
+                stack = new ItemBuilder().setMaterial(Material.getMaterial(item[0])).setAmount(Integer.valueOf(item[1])).build();
+            }
+            if(item.length == 3) {
+                stack = new ItemBuilder().setDisplayName(ChatColor.translateAlternateColorCodes('&', item[2])).setMaterial(Material.getMaterial(item[0])).setAmount(Integer.valueOf(item[1])).build();
+            }
+            if (stack != null) {
+                player.getInventory().addItem(stack);
             }
         }
         if (action.equalsIgnoreCase("message")) {

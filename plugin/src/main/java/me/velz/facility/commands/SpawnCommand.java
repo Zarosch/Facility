@@ -19,7 +19,7 @@ public class SpawnCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.spawn")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.spawn")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -33,14 +33,14 @@ public class SpawnCommand implements CommandExecutor {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.SPAWN_NOTSET.getLocal());
                 return true;
             }
-            if (player.hasPermission("facility.bypass.teleportdelay")) {
+            if (player.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".bypass.teleportdelay")) {
                 player.teleport(plugin.getFileManager().getSpawnLocation());
                 player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.SPAWN_TELEPORT_SELF.getLocal());
             } else {
                 new FacilityTeleport(player, plugin.getFileManager().getSpawnLocation(), MessageUtil.PREFIX.getLocal() + MessageUtil.SPAWN_TELEPORT_SELF.getLocal(), plugin.getFileManager().getTeleportDelay());
             }
         } else {
-            if (!cs.hasPermission("facility.command.spawn.other")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.spawn.other")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

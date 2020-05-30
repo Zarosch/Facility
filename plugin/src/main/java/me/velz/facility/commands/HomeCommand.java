@@ -21,7 +21,7 @@ public class HomeCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.home")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.home")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -40,7 +40,7 @@ public class HomeCommand implements CommandExecutor {
             home = "home";
         }
         if(args.length >= 2) {
-            if(!player.hasPermission("facility.command.home.other")) {
+            if(!player.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.home.other")) {
                 player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }
@@ -59,7 +59,7 @@ public class HomeCommand implements CommandExecutor {
             } else {
                 final Location loc = dbPlayer.getHomes().get(home);
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    if (player.hasPermission("facility.bypass.teleportdelay")) {
+                    if (player.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".bypass.teleportdelay")) {
                         player.teleport(loc);
                         cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.HOME_TELEPORT.getLocal().replaceAll("%home", home));
                     } else {

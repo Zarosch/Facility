@@ -1,6 +1,5 @@
 package me.velz.facility.commands;
 
-import java.util.UUID;
 import me.velz.facility.Facility;
 import me.velz.facility.database.DatabasePlayer;
 import me.velz.facility.utils.MessageUtil;
@@ -8,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class SeenCommand implements CommandExecutor {
 
@@ -20,12 +18,12 @@ public class SeenCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.seen")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.seen")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length == 0) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/seen <Player>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/seen <player>"));
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -34,14 +32,13 @@ public class SeenCommand implements CommandExecutor {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_SEEN_HEADER.getLocal().replaceAll("%player", dbPlayer.getName()));
                 final String lastSeen;
                 if (dbPlayer.isOnline()) {
-                    lastSeen = "Jetzt";
+                    lastSeen = "now";
                 } else {
                     lastSeen = Facility.getInstance().getTools().getDateAsString(dbPlayer.getLastJoin());
                 }
               
                 cs.sendMessage(MessageUtil.PLAYER_SEEN_MESSAGE.getLocal()
                         .replaceAll("%playtime", Facility.getInstance().getTools().getPlaytime(dbPlayer.getPlaytime()))
-                        .replaceAll("%money", dbPlayer.getMoney() + " " + MessageUtil.MONEYNAME.getLocal())
                         .replaceAll("%group", dbPlayer.getGroup())
                         .replaceAll("%firstjoin", Facility.getInstance().getTools().getDateAsString(dbPlayer.getFirstJoin()))
                         .replaceAll("%lastjoin", lastSeen));

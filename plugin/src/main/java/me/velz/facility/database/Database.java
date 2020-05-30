@@ -25,8 +25,7 @@ public interface Database {
     public void addHome(String uuid, String name, Location loc);
     public void deleteHome(String uuid, String name);
     
-    public HashMap<String, Double> moneyToplist();
-    public HashMap<String, Double> tokenToplist();
+    public HashMap<Integer, HashMap<String, Double>> currencyToplist(String currency);
     
     public boolean issetKitCooldown(String uuid, String kit);
     public boolean isKitCooldownExpired(Player player, String kit);

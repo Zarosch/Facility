@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import me.velz.facility.Facility;
-import me.velz.facility.FacilityAPI;
+import me.velz.facility.database.DatabasePlayer;
 import me.velz.facility.functions.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -32,33 +32,28 @@ public class Actions {
             customerror = null;
         }
         message = message.replaceAll("%player_name%", player.getName());
-        if (action.equalsIgnoreCase("takemoney")) {
-            if (!FacilityAPI.hasMoney(player, Double.valueOf(message))) {
-                if (customerror != null) {
-                    return "custom;" + customerror;
+        for (String currency : Facility.getInstance().getCurrencies().keySet()) {
+            if (action.equalsIgnoreCase("take" + currency)) {
+                DatabasePlayer dbPlayer = Facility.getInstance().getDatabase().getUser(player.getUniqueId().toString());
+                if (dbPlayer.getCurrencies().get(currency) < Integer.valueOf(message)) {
+                    if (customerror != null) {
+                        return "custom;" + customerror;
+                    }
+                    return "not_enough_money_" + currency;
                 }
-                return "not_enough_money";
-            }
-        }
-        if (action.equalsIgnoreCase("taketokens")) {
-            if (!FacilityAPI.hasMoney(player, Double.valueOf(message))) {
-                if (customerror != null) {
-                    return "custom;" + customerror;
-                }
-                return "not_enough_tokens";
             }
         }
         if (action.equalsIgnoreCase("takeitem")) {
             // material;amount;displayname
             String[] item = message.split(";");
             ItemStack stack = null;
-            if(item.length == 1) {
+            if (item.length == 1) {
                 stack = new ItemBuilder().setMaterial(Material.getMaterial(item[0])).setAmount(1).build();
             }
             if (item.length == 2) {
                 stack = new ItemBuilder().setMaterial(Material.getMaterial(item[0])).setAmount(Integer.valueOf(item[1])).build();
             }
-            if(item.length == 3) {
+            if (item.length == 3) {
                 stack = new ItemBuilder().setDisplayName(ChatColor.translateAlternateColorCodes('&', item[2])).setMaterial(Material.getMaterial(item[0])).setAmount(Integer.valueOf(item[1])).build();
             }
             if (stack != null) {
@@ -71,16 +66,16 @@ public class Actions {
                 removeFromInventory(player.getInventory(), stack);
             }
         }
-        if(action.equalsIgnoreCase("giveitem")) {
+        if (action.equalsIgnoreCase("giveitem")) {
             String[] item = message.split(";");
             ItemStack stack = null;
-            if(item.length == 1) {
+            if (item.length == 1) {
                 stack = new ItemBuilder().setMaterial(Material.getMaterial(item[0])).setAmount(1).build();
             }
-            if(item.length == 2) {
+            if (item.length == 2) {
                 stack = new ItemBuilder().setMaterial(Material.getMaterial(item[0])).setAmount(Integer.valueOf(item[1])).build();
             }
-            if(item.length == 3) {
+            if (item.length == 3) {
                 stack = new ItemBuilder().setDisplayName(ChatColor.translateAlternateColorCodes('&', item[2])).setMaterial(Material.getMaterial(item[0])).setAmount(Integer.valueOf(item[1])).build();
             }
             if (stack != null) {
@@ -93,7 +88,7 @@ public class Actions {
         if (action.equalsIgnoreCase("console")) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), message);
         }
-        
+
         if (action.equalsIgnoreCase("date")) {
             Date date1;
             try {
@@ -221,13 +216,11 @@ public class Actions {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', result.split(";")[1]));
                 return true;
             }
-            if (result.equalsIgnoreCase("not_enough_money")) {
-                player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MONEY_NOTENOUGH.getLocal());
-                return true;
-            }
-            if (result.equalsIgnoreCase("not_enough_tokens")) {
-                player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TOKENS_NOTENOUGH.getLocal());
-                return true;
+            for(String currency : Facility.getInstance().getCurrencies().keySet()) {
+                if (result.equalsIgnoreCase("not_enough_money_" + currency)) {
+                    player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.MONEY_NOTENOUGH.getLocal().replaceAll("%moneyname", Facility.getInstance().getCurrencies().get(currency).getDisplayName()));
+                    return true;
+                }
             }
             if (result.equalsIgnoreCase("not_enough_items")) {
                 player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOTENOUGHITEMS.getLocal());

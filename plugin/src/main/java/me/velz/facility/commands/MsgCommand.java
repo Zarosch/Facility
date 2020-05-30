@@ -5,7 +5,6 @@ import lombok.Getter;
 import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,12 +24,12 @@ public class MsgCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.msg")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.msg")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length == 0 || args.length == 1) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/msg <Spieler> <Nachricht>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/msg <player> <message>"));
             return true;
         }
         if (Bukkit.getPlayer(args[0]) == null) {

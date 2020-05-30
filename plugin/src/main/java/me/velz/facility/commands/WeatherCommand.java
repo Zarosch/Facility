@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,12 +9,18 @@ import org.bukkit.entity.Player;
 
 public class WeatherCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public WeatherCommand(Facility plugin) {
+        this.plugin = plugin;
+    } 
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
 
         //<editor-fold defaultstate="collapsed" desc="/weather">
         if (cmd.getName().equalsIgnoreCase("weather")) {
-            if (!cs.hasPermission("facility.command.weather")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.weather")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

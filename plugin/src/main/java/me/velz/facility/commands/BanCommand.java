@@ -22,12 +22,12 @@ public class BanCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.ban")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.ban")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length < 2) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/ban <Spieler> <Grund>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/ban <player> <reason>"));
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -47,7 +47,7 @@ public class BanCommand implements CommandExecutor {
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_BANNEDHOVER.getLocal().replaceAll("%punisher", cs.getName()).replaceAll("%time", "Permanent")).create()));
                 dbPlayer.setBan("BLOCKED;-1;" + reason);
                 dbPlayer.save();
-                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.ban") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.command.ban"))).forEachOrdered((all) -> {
+                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.ban") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.punish") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.ban"))).forEachOrdered((all) -> {
                     Facility.getInstance().getVersion().sendComponentMessage(all, component);
                 });
                 if (Bukkit.getPlayer(args[0]) != null) {

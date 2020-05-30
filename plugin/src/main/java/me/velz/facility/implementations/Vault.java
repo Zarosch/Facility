@@ -47,8 +47,18 @@ public class Vault {
     }
 
     public void addFacilityEconomy() {
-        Bukkit.getServicesManager().register(Economy.class, new VaultEconomy(), Facility.getInstance(), ServicePriority.Normal);
-        System.out.println("[Facility] VaultAPI hooked into FacilityEconomy");
+        String vaultCurrency = "";
+        for(String currency : Facility.getInstance().getCurrencies().keySet()) {
+            if(Facility.getInstance().getCurrencies().get(currency).isVault()) {
+                vaultCurrency = currency;
+            }
+        }
+        if(vaultCurrency != "") {
+            Bukkit.getServicesManager().register(Economy.class, new VaultEconomy(vaultCurrency), Facility.getInstance(), ServicePriority.Normal);
+            System.out.println("[Facility] VaultAPI hooked into FacilityEconomy");
+        } else {
+            System.out.println("[Facility] VaultAPI can't hooked into FacilityEconomy because no Vault currency exists.");
+        }
     }
 
     public void removeFacilityEconomy() {

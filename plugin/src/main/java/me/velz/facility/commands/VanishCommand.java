@@ -19,7 +19,7 @@ public class VanishCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.vanish")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.vanish")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -44,7 +44,7 @@ public class VanishCommand implements CommandExecutor {
                 return true;
             }
         } else {
-            if (!cs.hasPermission("facility.command.vanish.other")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.vanish.other")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

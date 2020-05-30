@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,9 +11,15 @@ import org.bukkit.entity.Player;
 
 public class TpCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public TpCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.tp")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.tp")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -35,7 +42,7 @@ public class TpCommand implements CommandExecutor {
             player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TP_SELF.getLocal().replaceAll("%player", target.getName()));
         }
         if (args.length == 2) {
-            if (!cs.hasPermission("facility.command.tp.other")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.tp.other")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

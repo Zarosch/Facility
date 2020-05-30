@@ -18,12 +18,12 @@ public class DelWarpCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.delwarp")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.delwarp")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length != 1) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/delwarp <Warp>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/delwarp <warp>"));
             return true;
         }
         if (!plugin.getWarps().containsKey(args[0])) {

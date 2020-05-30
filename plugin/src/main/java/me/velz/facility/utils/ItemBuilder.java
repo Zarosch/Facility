@@ -1,8 +1,12 @@
 package me.velz.facility.utils;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import me.velz.facility.Facility;
 import net.md_5.bungee.api.ChatColor;
 
@@ -23,6 +27,7 @@ public class ItemBuilder {
     private Color color;
     private int amount = 1;
     private String owner;
+    private String base64;
     private final HashMap<Enchantment, Integer> safeEnchant = new HashMap<>();
     private final HashMap<Enchantment, Integer> unSafeEnchant = new HashMap<>();
     private boolean unbreakable = false, soulbound = false;
@@ -175,6 +180,20 @@ public class ItemBuilder {
             SkullMeta sm = (SkullMeta) is.getItemMeta();
             sm.setOwner(owner);
             is.setItemMeta(sm);
+        }
+        if (base64 != null) {
+            SkullMeta meta = (SkullMeta) is.getItemMeta();
+            GameProfile profile = new GameProfile(UUID.randomUUID(), "");
+            profile.getProperties().put("textures", new Property("textures", base64));
+            Field profileField = null;
+            try {
+                profileField = meta.getClass().getDeclaredField("profile");
+                profileField.setAccessible(true);
+                profileField.set(meta, profile);
+            } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+                e.printStackTrace();
+            }
+            is.setItemMeta(meta);
         }
         if (color != null) {
             LeatherArmorMeta lam = (LeatherArmorMeta) is.getItemMeta();

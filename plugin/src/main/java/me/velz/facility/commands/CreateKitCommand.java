@@ -23,12 +23,12 @@ public class CreateKitCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.createkit")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.createkit")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if(args.length == 0) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/createkit <Kit>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/createkit <kit>"));
             return true;
         }
         String kitname = args[0].toLowerCase();
@@ -46,7 +46,7 @@ public class CreateKitCommand implements CommandExecutor {
         final FacilityKit facilityKit = new FacilityKit(kitname, "0", "facility.kit." + kitname, items);
         plugin.getKits().put(kitname, facilityKit);
         plugin.getFileManager().getKits().set("kits." + kitname + ".cooldown", "0");
-        plugin.getFileManager().getKits().set("kits." + kitname + ".permission", "facility.kit." + kitname);
+        plugin.getFileManager().getKits().set("kits." + kitname + ".permission", plugin.getFileManager().getPermissionPrefix() + ".kit." + kitname);
         Integer i = 1;
         for (ItemStack item : items) {
             plugin.getFileManager().getKits().set("kits." + kitname + ".items.item_" + i, item);

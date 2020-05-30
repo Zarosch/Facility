@@ -29,9 +29,9 @@ public class SQLiteDatabase implements Database {
                 this.connection = DriverManager.getConnection("jdbc:sqlite:plugins/Facility/database.db");
                 Statement statement = this.connection.createStatement();
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS players (uuid TEXT PRIMARY KEY, name TEXT, groupname TEXT, money DOUBLE, token DOUBLE, playtime INTEGER, firstJoin INTEGER, lastJoin INTEGER, ban TEXT, mute TEXT)");
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players_meta (id INTEGER PRIMARY KEY, uuid TEXT, key TEXT, value TEXT)");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players_meta (id INTEGER PRIMARY KEY, uuid TEXT, metakey TEXT, metavalue TEXT)");
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS players_currencies (id INTEGER PRIMARY KEY, uuid TEXT, currency TEXT, balance INTEGER)");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS warps (name TEXT PRIMARY KEY, world TEXT, x DOUBLE, y REAL, z REAL, yaw REAL, pitch REAL)");
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS playerwarps (name TEXT PRIMARY KEY, owner TEXT, expires INTEGER, world TEXT, x REAL, y REAL, z REAL, yaw REAL, pitch REAL)");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS homes (id INTEGER PRIMARY KEY, name TEXT, uuid TEXT, world TEXT, x REAL, y REAL, z REAL, yaw REAL, pitch REAL)");
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS kits_cooldown (id INTEGER PRIMARY KEY, uuid TEXT, kit TEXT, expired INTEGER)");
                 loadWarps();
@@ -79,12 +79,12 @@ public class SQLiteDatabase implements Database {
     public void insertUser(String uuid, String name) {
         try {
             String group = "";
-            if(plugin.getImplementations().getVault() != null) {
-                if(Bukkit.getPlayer(name) != null) {
+            if (plugin.getImplementations().getVault() != null) {
+                if (Bukkit.getPlayer(name) != null) {
                     group = plugin.getImplementations().getVault().getPermission().getPlayerGroups(Bukkit.getPlayer(name))[0];
                 }
             }
-            
+
             PreparedStatement ps = this.getConnection().prepareStatement("INSERT INTO players (uuid, name, groupname, money, token, playtime, firstJoin, lastJoin, ban, mute) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             ps.setString(1, uuid);
             ps.setString(2, name);
@@ -132,8 +132,6 @@ public class SQLiteDatabase implements Database {
             while (rs.next()) {
                 dbPlayer.setFirstJoin(rs.getLong("firstJoin"));
                 dbPlayer.setLastJoin(rs.getLong("lastJoin"));
-                dbPlayer.setMoney(rs.getDouble("money"));
-                dbPlayer.setToken(rs.getDouble("token"));
                 if (name != null) {
                     dbPlayer.setName(name);
                 } else {
@@ -161,7 +159,21 @@ public class SQLiteDatabase implements Database {
             }
             ps.close();
             rs.close();
-            
+
+            ps = getConnection().prepareStatement("SELECT * FROM players_currencies WHERE uuid = ?");
+            ps.setString(1, uuid);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                dbPlayer.getCurrencies().put(rs.getString("currency"), rs.getDouble("balance"));
+            }
+            ps.close();
+            rs.close();
+            for (String currency : plugin.getCurrencies().keySet()) {
+                if (!dbPlayer.getCurrencies().containsKey(currency)) {
+                    dbPlayer.getCurrencies().put(currency, plugin.getCurrencies().get(currency).getStartBalance());
+                }
+            }
+
             ps = connection.prepareStatement("SELECT * FROM players_meta WHERE uuid = ?");
             ps.setString(1, uuid);
             rs = ps.executeQuery();
@@ -182,25 +194,41 @@ public class SQLiteDatabase implements Database {
     public void saveUser(String uuid, DatabasePlayer dbPlayer) {
         try {
             String group = dbPlayer.getGroup();
-            if(plugin.getImplementations().getVault() != null) {
-                if(Bukkit.getPlayer(dbPlayer.getName()) != null) {
+            if (plugin.getImplementations().getVault() != null) {
+                if (Bukkit.getPlayer(dbPlayer.getName()) != null) {
                     group = plugin.getImplementations().getVault().getPermission().getPlayerGroups(Bukkit.getPlayer(dbPlayer.getGroup()))[0];
                 }
             }
-            
-            PreparedStatement ps = getConnection().prepareStatement("UPDATE players SET firstJoin=?, lastJoin=?, money=?, name=?, groupname=?, playtime=?, ban=?, mute=?, token=? WHERE uuid = ?");
+
+            PreparedStatement ps = getConnection().prepareStatement("UPDATE players SET firstJoin=?, lastJoin=?, name=?, groupname=?, playtime=?, ban=?, mute=? WHERE uuid = ?");
             ps.setLong(1, dbPlayer.getFirstJoin());
             ps.setLong(2, dbPlayer.getLastJoin());
-            ps.setDouble(3, dbPlayer.getMoney());
             ps.setString(4, dbPlayer.getName());
             ps.setString(5, group);
             ps.setInt(6, dbPlayer.getPlaytime());
             ps.setString(7, dbPlayer.getBan());
             ps.setString(8, dbPlayer.getMute());
-            ps.setDouble(9, dbPlayer.getToken());
             ps.setString(10, uuid);
             ps.executeUpdate();
             ps.close();
+
+            String query = "INSERT INTO players_currencies (uuid, currency, balance) VALUES ";
+            for (String currency : plugin.getCurrencies().keySet()) {
+                query = query + "(?, ?, ?),";
+            }
+            query = query.substring(0, query.length() - 1) + " ON DUPLICATE KEY UPDATE uuid=VALUES(uuid), currency=VALUES(currency)";
+            PreparedStatement insertCurrencies = getConnection().prepareStatement(query);
+            int count = 1;
+            for (String currency : dbPlayer.getCurrencies().keySet()) {
+                insertCurrencies.setString(count, uuid);
+                count++;
+                insertCurrencies.setString(count, currency);
+                count++;
+                insertCurrencies.setDouble(count, dbPlayer.getCurrencies().get(currency));
+                count++;
+            }
+            insertCurrencies.executeUpdate();
+            insertCurrencies.close();
         } catch (SQLException ex) {
             Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -295,35 +323,23 @@ public class SQLiteDatabase implements Database {
     }
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="moneyToplist()">
+    //<editor-fold defaultstate="collapsed" desc="currencyToplist()">
     @Override
-    public HashMap<String, Double> moneyToplist() {
-        HashMap<String, Double> toplist = new HashMap();
+    public HashMap<Integer, HashMap<String, Double>> currencyToplist(String currency) {
+        HashMap<Integer, HashMap<String, Double>> toplist = new HashMap();
         try {
-            PreparedStatement ps = getConnection().prepareStatement("SELECT * FROM players ORDER BY money DESC LIMIT 20");
+            PreparedStatement ps = getConnection().prepareStatement("SELECT players.name, players_currencies.balance, players_currencies.currency FROM players_currencies INNER JOIN players ON players_currencies.uuid = players.uuid WHERE players_currencies.currency=? ORDER BY players_currencies.balance DESC LIMIT 20");
+            ps.setString(1, currency);
             ResultSet rs = ps.executeQuery();
+            Integer i = 1;
             while (rs.next()) {
-                toplist.put(rs.getString("name"), rs.getDouble("money"));
+                HashMap<String, Double> entry = new HashMap<>();
+                entry.put(rs.getString("players.name"), rs.getDouble("players_currencies.balance"));
+                toplist.put(i, entry);
+                i++;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return toplist;
-    }
-    //</editor-fold>
-
-    //<editor-fold defaultstate="collapsed" desc="tokenToplist()">
-    @Override
-    public HashMap<String, Double> tokenToplist() {
-        HashMap<String, Double> toplist = new HashMap();
-        try {
-            PreparedStatement ps = getConnection().prepareStatement("SELECT * FROM players ORDER BY token DESC LIMIT 20");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                toplist.put(rs.getString("name"), rs.getDouble("token"));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(SQLiteDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MySQLDatabase.class.getName()).log(Level.SEVERE, null, ex);
         }
         return toplist;
     }
@@ -506,7 +522,7 @@ public class SQLiteDatabase implements Database {
         }
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="getMetadata(uuid, key)">
     @Override
     public String getMetadata(String uuid, String key) {

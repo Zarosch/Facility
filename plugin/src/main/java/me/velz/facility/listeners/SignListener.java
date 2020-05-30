@@ -20,14 +20,14 @@ public class SignListener implements Listener {
 
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
-        if (event.getPlayer().hasPermission("facility.color.signs")) {
+        if (event.getPlayer().hasPermission(plugin.getFileManager().getPermissionPrefix() + ".color.signs")) {
             int i = 0;
             for (String line : event.getLines()) {
                 event.setLine(i, net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', line));
                 i++;
             }
         }
-        if (!event.getPlayer().hasPermission("facility.sign.warp")) {
+        if (!event.getPlayer().hasPermission(plugin.getFileManager().getPermissionPrefix() + ".sign.warp")) {
             if (event.getLine(1).equalsIgnoreCase("[Warp]") || event.getLine(1).equalsIgnoreCase("&8[&1Warp&8]")) {
                 event.getPlayer().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 event.setCancelled(true);
@@ -55,7 +55,7 @@ public class SignListener implements Listener {
                         event.getPlayer().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_NOTFOUND.getLocal());
                         return;
                     }
-                    if (event.getPlayer().hasPermission("facility.bypass.teleportdelay")) {
+                    if (event.getPlayer().hasPermission(plugin.getFileManager().getPermissionPrefix() + ".bypass.teleportdelay")) {
                         event.getPlayer().teleport(plugin.getWarps().get(warp).getLoc());
                         event.getPlayer().sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_TELEPORT_SELF.getLocal().replaceAll("%warp", warp));
                     } else {

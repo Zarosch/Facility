@@ -10,6 +10,14 @@ import org.bukkit.OfflinePlayer;
 
 public class VaultEconomy implements Economy {
 
+    private final String vaultCurrency;
+    
+    public VaultEconomy(String vaultCurrency) {
+        this.vaultCurrency = vaultCurrency;
+    }
+
+    
+    
     @Override
     public boolean isEnabled() {
         return true;
@@ -37,12 +45,12 @@ public class VaultEconomy implements Economy {
 
     @Override
     public String currencyNamePlural() {
-        return MessageUtil.MONEYNAME.getLocal();
+        return Facility.getInstance().getCurrencies().get(vaultCurrency).getDisplayName();
     }
 
     @Override
     public String currencyNameSingular() {
-        return MessageUtil.MONEYNAME.getLocal();
+        return Facility.getInstance().getCurrencies().get(vaultCurrency).getDisplayName();
     }
 
     @Override
@@ -69,7 +77,7 @@ public class VaultEconomy implements Economy {
     @Override
     public double getBalance(String playerName) {
         DatabasePlayer dbPlayer = Facility.getInstance().getDatabase().getUser(playerName);
-        return dbPlayer.getMoney();
+        return dbPlayer.getCurrencies().get(vaultCurrency);
     }
 
     @Override
@@ -111,11 +119,11 @@ public class VaultEconomy implements Economy {
     public EconomyResponse withdrawPlayer(String playerName, double d) {
         DatabasePlayer dbPlayer = Facility.getInstance().getDatabase().getUser(playerName);
         if(dbPlayer.isSuccess()) {
-            dbPlayer.setMoney(dbPlayer.getMoney()-d);
+            dbPlayer.getCurrencies().put(vaultCurrency, dbPlayer.getCurrencies().get(vaultCurrency)-d);
             if(!dbPlayer.isOnline()){
                 dbPlayer.save();
             }
-            return new EconomyResponse(d, dbPlayer.getMoney(), EconomyResponse.ResponseType.SUCCESS, playerName);
+            return new EconomyResponse(d, dbPlayer.getCurrencies().get(vaultCurrency), EconomyResponse.ResponseType.SUCCESS, playerName);
         }
         return new EconomyResponse(d, 0, EconomyResponse.ResponseType.FAILURE, playerName);
     }
@@ -139,11 +147,11 @@ public class VaultEconomy implements Economy {
     public EconomyResponse depositPlayer(String playerName, double d) {
         DatabasePlayer dbPlayer = Facility.getInstance().getDatabase().getUser(playerName);
         if(dbPlayer.isSuccess()) {
-            dbPlayer.setMoney(dbPlayer.getMoney()+d);
+            dbPlayer.getCurrencies().put(vaultCurrency, dbPlayer.getCurrencies().get(vaultCurrency)+d);
             if(!dbPlayer.isOnline()){
                 dbPlayer.save();
             }
-            return new EconomyResponse(d, dbPlayer.getMoney(), EconomyResponse.ResponseType.SUCCESS, playerName);
+            return new EconomyResponse(d, dbPlayer.getCurrencies().get(vaultCurrency), EconomyResponse.ResponseType.SUCCESS, playerName);
         }
         return new EconomyResponse(d, 0, EconomyResponse.ResponseType.FAILURE, playerName);
     }

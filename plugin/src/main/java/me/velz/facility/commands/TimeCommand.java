@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,12 +9,18 @@ import org.bukkit.entity.Player;
 
 public class TimeCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public TimeCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
         
         //<editor-fold defaultstate="collapsed" desc="/time">
         if (cmd.getName().equalsIgnoreCase("time")) {
-            if (!cs.hasPermission("facility.command.time")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.time")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }
@@ -45,7 +52,7 @@ public class TimeCommand implements CommandExecutor {
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="/day">
         if (cmd.getName().equalsIgnoreCase("day")) {
-            if (!cs.hasPermission("facility.command.day") && !cs.hasPermission("facility.command.time")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.day") && !cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.time")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }
@@ -58,7 +65,7 @@ public class TimeCommand implements CommandExecutor {
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="/night">
         if (cmd.getName().equalsIgnoreCase("night")) {
-            if (!cs.hasPermission("facility.command.night")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.night")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

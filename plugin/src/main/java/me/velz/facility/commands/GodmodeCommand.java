@@ -11,9 +11,15 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class GodmodeCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public GodmodeCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.godmode")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.godmode")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -32,7 +38,7 @@ public class GodmodeCommand implements CommandExecutor {
                 return true;
             }
         } else {
-            if (!cs.hasPermission("facility.command.godmode.other")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.godmode.other")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

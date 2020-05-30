@@ -19,12 +19,12 @@ public class TeamchatCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.teamchat")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.teamchat")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length == 0) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/teamchat [Nachricht]"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/teamchat [message]"));
             return true;
         } else {
             String message = "";
@@ -38,7 +38,7 @@ public class TeamchatCommand implements CommandExecutor {
             }
             
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player.hasPermission("facility.command.teamchat")) {
+                if (player.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.teamchat")) {
                     player.sendMessage(MessageUtil.CHAT_TEAMCHAT.getLocal().replaceAll("%player", ChatColor.translateAlternateColorCodes('&', prefix) + cs.getName()).replaceAll("%message", message));
                 }
             }

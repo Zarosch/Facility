@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,14 +11,20 @@ import org.bukkit.entity.Player;
 
 public class TpLocCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public TpLocCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.tploc")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.tploc")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length != 3 && args.length != 4) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/tploc <X> <Y> <Z> [Player]"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/tploc <x> <y> <z> [player]"));
             return true;
         }
         try {

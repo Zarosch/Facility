@@ -22,7 +22,7 @@ public class TempMuteCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.tempmute")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.tempmute")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -47,7 +47,7 @@ public class TempMuteCommand implements CommandExecutor {
                 TextComponent component = new TextComponent(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_MUTEDBROADCAST.getLocal().replaceAll("%reason", reason).replaceAll("%name", args[0]));
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_MUTEDHOVER.getLocal().replaceAll("%punisher", cs.getName()).replaceAll("%time", "Permanent")).create()));
                 dbPlayer.setMute("BLOCKED;" + (time + System.currentTimeMillis()) + ";" + reason);
-                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.mute") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.commands.mute"))).forEachOrdered((all) -> {
+                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.mute") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.punish") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".commands.mute"))).forEachOrdered((all) -> {
                     Facility.getInstance().getVersion().sendComponentMessage(all, component);
                 });
                 Bukkit.getScheduler().runTask(plugin, () -> {

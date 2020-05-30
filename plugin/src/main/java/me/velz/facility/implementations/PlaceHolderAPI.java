@@ -24,11 +24,10 @@ public class PlaceHolderAPI extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player player, String identifier) {
         if (player != null) {
             DatabasePlayer dbPlayer = plugin.getDatabase().getUser(player.getUniqueId().toString());
-            if (identifier.equals("money")) {
-                return String.valueOf((int)dbPlayer.getMoney());
-            }
-            if (identifier.equals("tokens")) {
-                return String.valueOf((int)dbPlayer.getToken());
+            for(String currency : plugin.getCurrencies().keySet()) {
+                if(identifier.equals(currency)) {
+                    return String.valueOf(dbPlayer.getCurrencies().get(currency));
+                }
             }
             if (identifier.equals("playtime")) {
                 return plugin.getTools().getPlaytime(dbPlayer.getPlaytime());

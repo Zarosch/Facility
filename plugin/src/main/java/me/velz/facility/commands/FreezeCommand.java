@@ -11,14 +11,20 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class FreezeCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public FreezeCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.freeze")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.freeze")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length == 0) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/freeze <Player>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/freeze <player>"));
             return true;
         } else {
             if (Bukkit.getPlayer(args[0]) == null) {

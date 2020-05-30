@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -9,14 +10,20 @@ import org.bukkit.entity.Player;
 
 public class TpHereCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public TpHereCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.tphere")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.tphere")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length == 0) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/tphere <Spieler>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/tphere <player>"));
             return true;
         }
         if (args.length == 1) {

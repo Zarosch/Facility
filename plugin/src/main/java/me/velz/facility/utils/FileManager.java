@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import me.velz.facility.Facility;
+import me.velz.facility.objects.FacilityCurrency;
 import me.velz.facility.objects.FacilityKit;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -18,19 +19,16 @@ public class FileManager {
     public FileManager(Facility plugin) {
         this.plugin = plugin;
         config = new FileBuilder(plugin.getDataFolder().getPath(), "config.yml");
-        
         spawn = new FileBuilder(plugin.getDataFolder().getPath() + "/data", "spawn.yml");
         kits = new FileBuilder(plugin.getDataFolder().getPath() + "/data", "kits.yml");
-        arenas = new FileBuilder(plugin.getDataFolder().getPath() + "/data", "arenas.yml");
         currencies = new FileBuilder(plugin.getDataFolder().getPath() + "/data", "currencies.yml");
-        punishments = new FileBuilder(plugin.getDataFolder().getPath() + "/", "punishments.yml");
         setDefaults();
         load();
     }
     
     @Getter
     @Setter
-    private String newbieBroadcastMessage, newbieKit, newbieWarp, chatFormat, teleportSoundType, databaseType, databaseHost, databaseUser, databasePassword, databaseDatabase;
+    private String permissionPrefix, newbieBroadcastMessage, newbieKit, newbieWarp, chatFormat, teleportSoundType, databaseType, databaseHost, databaseUser, databasePassword, databaseDatabase;
 
     @Getter
     private ArrayList<String> motds;
@@ -46,10 +44,13 @@ public class FileManager {
     private Location spawnLocation;
 
     @Getter
-    private final FileBuilder config, spawn, kits, currencies, arenas, punishments;
+    private final FileBuilder config, spawn, kits, currencies;
 
     public final void load() {
         this.getConfig().load();
+        
+        //Plugin
+        permissionPrefix = this.getConfig().getString("plugin.permissionPrefix");
 
         // Database
         databaseHost = this.getConfig().getString("database.host");
@@ -58,9 +59,6 @@ public class FileManager {
         databasePassword = this.getConfig().getString("database.password");
         databaseDatabase = this.getConfig().getString("database.database");
         databaseType = this.getConfig().getString("database.type");
-        
-        // Arena
-        arenaEnabled = this.getConfig().getBoolean("arena.enabled");
 
         // Chat
         chatFormat = this.getConfig().getString("chat.format");
@@ -89,20 +87,24 @@ public class FileManager {
                 final FacilityKit facilityKit = new FacilityKit(kit.toLowerCase(), cooldown, permission, items);
                 Facility.getInstance().getKits().put(kit.toLowerCase(), facilityKit);
             } catch (NullPointerException ex) {
-                System.out.println("[Facility] Error! Kit [" + kit + "] cannot be loaded.");
+                System.out.println("[Facility] Error! Kit [" + kit + "] can't be loaded.");
             }
         });
         
-        // Punishments
-        this.getPunishments().load();
-        this.getPunishments().addDefault("punishments.hacking.id", 1);
-        this.getPunishments().addDefault("punishments.hacking.actions", new String[] {
-            "command>tempban %player 30d Hacking"
-            
+        // Currencies
+        this.getCurrencies().getConfiguration().getConfigurationSection("currencies").getKeys(false).forEach((currency) -> {
+            try {
+                String internalName = this.getCurrencies().getString("currencies." + currency + ".internalName");
+                String displayName = this.getCurrencies().getString("currencies." + currency + ".displayName");
+                String prefix = ChatColor.translateAlternateColorCodes('&', this.getCurrencies().getString("currencies." + currency + ".prefix"));
+                boolean vault = this.getCurrencies().getBoolean("currencies." + currency + ".vault");
+                Double startBalance = this.getCurrencies().getDouble("currencies." + currency + ".startBalance");
+                plugin.getCurrencies().put(internalName, new FacilityCurrency(prefix, displayName, internalName, startBalance, vault));
+            } catch (NullPointerException ex) {
+                System.out.println("[Facility] Error! Currency [" + currency + "] can't be loaded.");
+            }
         });
-
-        // Armorstands
-
+        
         // Spawn
         this.getSpawn().load();
         Bukkit.getScheduler().runTaskLater(Facility.getInstance(), () -> {
@@ -118,6 +120,9 @@ public class FileManager {
     }
 
     public final void setDefaults() {
+        // Plugin
+        this.getConfig().addDefault("plugin.permissionPrefix", "facility");
+        
         // Database
         this.getConfig().addDefault("database.type", "SQLite");
         this.getConfig().addDefault("database.host", "localhost");
@@ -125,12 +130,9 @@ public class FileManager {
         this.getConfig().addDefault("database.user", "root");
         this.getConfig().addDefault("database.password", "123456");
         this.getConfig().addDefault("database.database", "Facility");
-
-        // Arena
-        this.getConfig().addDefault("arena.enabled", false);
         
         // Chat
-        this.getConfig().addDefault("chat.format", "%prefix%player &7>&7 %message");
+        this.getConfig().addDefault("chat.format", "%prefix%player&7:&7 %message");
         this.getConfig().addDefault("chat.mention", true);
 
         // Teleport
@@ -140,11 +142,12 @@ public class FileManager {
         this.getConfig().addDefault("newbie.kit", "newbie");
         this.getConfig().addDefault("newbie.warp", "newbie");
         this.getConfig().addDefault("newbie.broadcast.enabled", false);
-        this.getConfig().addDefault("newbie.broadcast.message", "§dWir haben einen neuen Mitspieler! Willkommen %player!");
+        this.getConfig().addDefault("newbie.broadcast.message", "§d%player joined the first time!");
 
         // Server Motd
         if (!this.getConfig().getConfiguration().contains("serverlist.motd")) {
-            this.getConfig().addDefault("serverlist.motd.default", "&eFacility\n&eAlles in einem Plugin.");
+            this.getConfig().addDefault("serverlist.motd.default", "&eFacility\n&7Makes your server better.");
+            this.getConfig().addDefault("serverlist.motd.default2", "&eFacility\n&fMakes your server better.");
         }
 
         this.getConfig().save();
@@ -161,10 +164,17 @@ public class FileManager {
         }
         
         if(!this.getCurrencies().getConfiguration().contains("currencies")) {
-            this.getCurrencies().addDefault("currencies.money.name", "money");
-            this.getCurrencies().addDefault("currencies.money.displayName", "Euro");
-            this.getCurrencies().addDefault("currencies.money.defaultBalance", 0);
+            this.getCurrencies().addDefault("currencies.money.internalName", "coins");
+            this.getCurrencies().addDefault("currencies.money.displayName", "Coins");
+            this.getCurrencies().addDefault("currencies.money.startBalance", 0.0);
             this.getCurrencies().addDefault("currencies.money.prefix", "&8[&3Money&8] &6");
+            this.getCurrencies().addDefault("currencies.money.vault", true);
+            
+            this.getCurrencies().addDefault("currencies.bank.internalName", "bankcoins");
+            this.getCurrencies().addDefault("currencies.bank.displayName", "Coins");
+            this.getCurrencies().addDefault("currencies.bank.startBalance", 0.0);
+            this.getCurrencies().addDefault("currencies.bank.prefix", "&8[&3Bank&8] &6");
+            this.getCurrencies().addDefault("currencies.bank.vault", false);
             this.getCurrencies().save();
         }
     }

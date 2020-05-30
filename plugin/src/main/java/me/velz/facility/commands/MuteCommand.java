@@ -22,12 +22,12 @@ public class MuteCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.mute")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.mute")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length < 2) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/mute <Spieler> <Grund>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/mute <player> <reason>"));
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -48,7 +48,7 @@ public class MuteCommand implements CommandExecutor {
                 dbPlayer.setMute("BLOCKED;-1;" + reason);
                 dbPlayer.save();
                 for (Player all : Bukkit.getOnlinePlayers()) {
-                    if (all.hasPermission("facility.broadcast.mute") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.command.mute")) {
+                    if (all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.mute") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.punish") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.mute")) {
                         Facility.getInstance().getVersion().sendComponentMessage(all, component);
                     }
                 }

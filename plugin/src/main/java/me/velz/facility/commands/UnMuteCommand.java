@@ -21,7 +21,7 @@ public class UnMuteCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.unmute")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.unmute")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -40,7 +40,7 @@ public class UnMuteCommand implements CommandExecutor {
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_UNMUTEDHOVER.getLocal().replaceAll("%punisher", cs.getName())).create()));
                 dbPlayer.setMute("OK");
                 dbPlayer.save();
-                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.unmute") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.command.unmute"))).forEachOrdered((all) -> {
+                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.unmute") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.punish") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.unmute"))).forEachOrdered((all) -> {
                     Facility.getInstance().getVersion().sendComponentMessage(all, component);
                 });
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_UNMUTE.getLocal());

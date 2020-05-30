@@ -11,6 +11,9 @@ public class Implementations {
     
     @Getter
     private PlaceHolderAPI placeholderapi;
+    
+    @Getter
+    private Votifier votifier;
 
     public void hook() {
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {

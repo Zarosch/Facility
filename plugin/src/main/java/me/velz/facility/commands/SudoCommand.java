@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -9,9 +10,15 @@ import org.bukkit.entity.Player;
 
 public class SudoCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public SudoCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.sudo")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.sudo")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -20,7 +27,7 @@ public class SudoCommand implements CommandExecutor {
             return true;
         }
         if (args.length <= 2) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/sudo <Player> <Command/c:Nachricht>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/sudo <player> <command/c:message>"));
             return true;
         }
         Player target = Bukkit.getPlayer(args[0]);

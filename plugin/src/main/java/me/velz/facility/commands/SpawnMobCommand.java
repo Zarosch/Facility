@@ -11,14 +11,20 @@ import org.bukkit.entity.Player;
 
 public class SpawnMobCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public SpawnMobCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.spawnmob")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.spawnmob")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length == 0) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/spawnmob <Type> <Amount> [Spieler]"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/spawnmob <type> <amount> [player]"));
             return true;
         }
         EntityType entityType;

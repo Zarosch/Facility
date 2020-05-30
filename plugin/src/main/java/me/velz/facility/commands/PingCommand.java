@@ -10,9 +10,15 @@ import org.bukkit.entity.Player;
 
 public class PingCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public PingCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.ping")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.ping")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -25,7 +31,7 @@ public class PingCommand implements CommandExecutor {
                 return true;
             }
         } else {
-            if (!cs.hasPermission("facility.command.ping.other")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.ping.other")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

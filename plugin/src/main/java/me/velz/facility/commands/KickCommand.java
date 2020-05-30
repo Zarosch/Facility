@@ -13,14 +13,20 @@ import org.bukkit.entity.Player;
 
 public class KickCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public KickCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.kick")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.kick")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length < 2) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/kick <Spieler> <Grund>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/kick <player> <reason>"));
             return true;
         }
         if (Bukkit.getPlayer(args[0]) == null) {
@@ -29,7 +35,7 @@ public class KickCommand implements CommandExecutor {
         }
         Player target = Bukkit.getPlayer(args[0]);
         if (cs instanceof Player) {
-            if (target.hasPermission("facility.bypass.punishments")) {
+            if (target.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".bypass.punishments")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_BYPASSPUNISH.getLocal());
                 return true;
             }
@@ -43,7 +49,7 @@ public class KickCommand implements CommandExecutor {
         TextComponent component = new TextComponent(MessageUtil.PUNISH_KICKED.getLocal().replaceAll("%reason", reason).replaceAll("%name", target.getName()));
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_KICKEDHOVER.getLocal().replaceAll("%punisher", cs.getName())).create()));
         for (Player all : Bukkit.getOnlinePlayers()) {
-            if (all.hasPermission("facility.broadcast.kick") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.command.kick")) {
+            if (all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.kick") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.punish") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.kick")) {
                 Facility.getInstance().getVersion().sendComponentMessage(all, component);
             }
         }

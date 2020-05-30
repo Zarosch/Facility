@@ -19,7 +19,7 @@ public class WarpCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.warp")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.warp")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -30,7 +30,7 @@ public class WarpCommand implements CommandExecutor {
             }
             if (cs instanceof Player) {
                 Player player = (Player) cs;
-                if (player.hasPermission("facility.bypass.teleportdelay")) {
+                if (player.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".bypass.teleportdelay")) {
                     player.teleport(plugin.getWarps().get(args[0]).getLoc());
                     cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARP_TELEPORT_SELF.getLocal().replaceAll("%warp", args[0]));
                 } else {
@@ -43,7 +43,7 @@ public class WarpCommand implements CommandExecutor {
             return true;
         }
         if (args.length == 2) {
-            if (!cs.hasPermission("facility.command.warp.other")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.warp.other")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

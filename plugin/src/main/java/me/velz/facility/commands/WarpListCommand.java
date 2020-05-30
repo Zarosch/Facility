@@ -25,7 +25,7 @@ public class WarpListCommand implements CommandExecutor, Listener {
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.warplist")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.warplist")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -41,12 +41,12 @@ public class WarpListCommand implements CommandExecutor, Listener {
                     return true;
                 }
             } catch (NumberFormatException exception) {
-                cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.WARPLIST_NOINT.getLocal());
+                cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NONUMBER.getLocal());
                 return true;
             }
         }
 
-        Inventory inventory = Bukkit.createInventory(null, 36, "§8Warps [Seite " + page + "]");
+        Inventory inventory = Bukkit.createInventory(null, 36, "§8Warps [Page " + page + "]");
 
         int itemint = 0;
         int amount = 0;
@@ -75,7 +75,7 @@ public class WarpListCommand implements CommandExecutor, Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getView().getTitle() != null) {
-            if (event.getView().getTitle().startsWith("§8Warps [Seite ")) {
+            if (event.getView().getTitle().startsWith("§8Warps [Page ")) {
                 if (event.getCurrentItem() != null) {
                     if (event.getCurrentItem().getItemMeta() != null) {
                         if (event.getCurrentItem().getItemMeta().getDisplayName() != null) {
@@ -85,10 +85,10 @@ public class WarpListCommand implements CommandExecutor, Listener {
                             }
                             if (event.getCurrentItem().getType() == Material.BOOK) {
                                 Integer page = Integer.valueOf(event.getView().getTitle().split("Seite ")[1].split("]")[0]);
-                                if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§6Zurück")) {
+                                if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§6Back")) {
                                     Bukkit.dispatchCommand(player, "warplist " + (page-1));
                                 }
-                                if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§6Weiter")) {
+                                if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§6Next")) {
                                     Bukkit.dispatchCommand(player, "warplist " + (page+1));
                                 }
                             }

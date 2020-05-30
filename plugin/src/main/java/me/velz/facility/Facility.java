@@ -2,8 +2,6 @@ package me.velz.facility;
 
 import java.util.HashMap;
 import lombok.Getter;
-import me.velz.facility.arenas.FacilityArenaManager;
-import me.velz.facility.commands.ArenaCommand;
 import me.velz.facility.commands.BanCommand;
 import me.velz.facility.commands.BlockPhysicsCommand;
 import me.velz.facility.commands.BoatCommand;
@@ -33,13 +31,11 @@ import me.velz.facility.commands.KickCommand;
 import me.velz.facility.commands.KillCommand;
 import me.velz.facility.commands.KitCommand;
 import me.velz.facility.commands.LevelCommand;
-import me.velz.facility.commands.MoneyCommand;
 import me.velz.facility.commands.MoreCommand;
 import me.velz.facility.commands.MotdCommand;
 import me.velz.facility.commands.MsgCommand;
 import me.velz.facility.commands.MuteCommand;
 import me.velz.facility.commands.OpeninvCommand;
-import me.velz.facility.commands.PayCommand;
 import me.velz.facility.commands.PingCommand;
 import me.velz.facility.commands.PlaytimeCommand;
 import me.velz.facility.commands.ReplyCommand;
@@ -59,7 +55,6 @@ import me.velz.facility.commands.TeamchatCommand;
 import me.velz.facility.commands.TempBanCommand;
 import me.velz.facility.commands.TempMuteCommand;
 import me.velz.facility.commands.TimeCommand;
-import me.velz.facility.commands.TokensCommand;
 import me.velz.facility.commands.TpCommand;
 import me.velz.facility.commands.TpHereCommand;
 import me.velz.facility.commands.TpLocCommand;
@@ -91,6 +86,7 @@ import me.velz.facility.listeners.QuitListener;
 import me.velz.facility.listeners.RespawnListener;
 import me.velz.facility.listeners.ServerListPingListener;
 import me.velz.facility.listeners.SignListener;
+import me.velz.facility.objects.FacilityCurrency;
 import me.velz.facility.objects.FacilityKit;
 import me.velz.facility.utils.FileManager;
 import me.velz.facility.utils.MessageUtil;
@@ -125,12 +121,12 @@ public class Facility extends JavaPlugin {
 
     @Getter
     private final HashMap<String, FacilityKit> kits = new HashMap();
+    
+    @Getter
+    private final HashMap<String, FacilityCurrency> currencies = new HashMap();
 
     @Getter 
     private final FunctionManager functionManager = new FunctionManager(this);
-    
-    @Getter
-    private final FacilityArenaManager arenaManager = new FacilityArenaManager(this);
 
     @Getter
     private final VersionMatcher versionMatcher = new VersionMatcher();
@@ -156,13 +152,12 @@ public class Facility extends JavaPlugin {
         this.loadListener();
         this.loadCommands();
         this.getFunctionManager().load();
-        this.loadArena();
     }
-    
-    private void loadArena() {
-        if(this.getFileManager().isArenaEnabled()) {
-            getCommand("arena").setExecutor(new ArenaCommand(this));
-            this.getArenaManager().load();
+
+    @Override
+    public void onDisable() {
+        for(DatabasePlayer dbPlayer : this.getPlayers().values()) {
+            dbPlayer.save();
         }
     }
 
@@ -182,79 +177,76 @@ public class Facility extends JavaPlugin {
     private void loadCommands() {
         getCommand("ban").setExecutor(new BanCommand(this));
         getCommand("boat").setExecutor(new BoatCommand(this));
-        getCommand("blockphysics").setExecutor(new BlockPhysicsCommand());
-        getCommand("broadcast").setExecutor(new BroadcastCommand());
-        getCommand("clearchat").setExecutor(new ClearChatCommand());
-        getCommand("clearinv").setExecutor(new ClearinvCommand());
+        getCommand("blockphysics").setExecutor(new BlockPhysicsCommand(this));
+        getCommand("broadcast").setExecutor(new BroadcastCommand(this));
+        getCommand("clearchat").setExecutor(new ClearChatCommand(this));
+        getCommand("clearinv").setExecutor(new ClearinvCommand(this));
         getCommand("delhome").setExecutor(new DelHomeCommand(this));
         getCommand("delwarp").setExecutor(new DelWarpCommand(this));
-        getCommand("enchantmenttable").setExecutor(new EnchantmentTableCommand());
-        getCommand("enderchest").setExecutor(new EnderChestCommand());
+        getCommand("enchantmenttable").setExecutor(new EnchantmentTableCommand(this));
+        getCommand("enderchest").setExecutor(new EnderChestCommand(this));
         getCommand("facility").setExecutor(new FacilityCommand(this));
-        getCommand("feed").setExecutor(new FeedCommand());
-        getCommand("fly").setExecutor(new FlyCommand());
-        getCommand("freeze").setExecutor(new FreezeCommand());
-        getCommand("gamemode").setExecutor(new GamemodeCommand());
-        getCommand("globalmute").setExecutor(new GlobalMuteCommand());
-        getCommand("godmode").setExecutor(new GodmodeCommand());
-        getCommand("hat").setExecutor(new HatCommand());
-        getCommand("heal").setExecutor(new HealCommand());
+        getCommand("feed").setExecutor(new FeedCommand(this));
+        getCommand("fly").setExecutor(new FlyCommand(this));
+        getCommand("freeze").setExecutor(new FreezeCommand(this));
+        getCommand("gamemode").setExecutor(new GamemodeCommand(this));
+        getCommand("globalmute").setExecutor(new GlobalMuteCommand(this));
+        getCommand("godmode").setExecutor(new GodmodeCommand(this));
+        getCommand("hat").setExecutor(new HatCommand(this));
+        getCommand("heal").setExecutor(new HealCommand(this));
         getCommand("home").setExecutor(new HomeCommand(this));
         getCommand("homelist").setExecutor(new HomeListCommand(this));
-        getCommand("jump").setExecutor(new JumpCommand());
-        getCommand("kick").setExecutor(new KickCommand());
-        getCommand("kill").setExecutor(new KillCommand());
-        getCommand("level").setExecutor(new LevelCommand());
-        getCommand("money").setExecutor(new MoneyCommand(this));
-        getCommand("more").setExecutor(new MoreCommand());
-        getCommand("motd").setExecutor(new MotdCommand());
+        getCommand("jump").setExecutor(new JumpCommand(this));
+        getCommand("kick").setExecutor(new KickCommand(this));
+        getCommand("kill").setExecutor(new KillCommand(this));
+        getCommand("level").setExecutor(new LevelCommand(this));
+        getCommand("more").setExecutor(new MoreCommand(this));
+        getCommand("motd").setExecutor(new MotdCommand(this));
         getCommand("msg").setExecutor(new MsgCommand(this));
         getCommand("mute").setExecutor(new MuteCommand(this));
-        getCommand("openinv").setExecutor(new OpeninvCommand());
-        getCommand("pay").setExecutor(new PayCommand());
-        getCommand("ping").setExecutor(new PingCommand());
+        getCommand("openinv").setExecutor(new OpeninvCommand(this));
+        getCommand("ping").setExecutor(new PingCommand(this));
         getCommand("playtime").setExecutor(new PlaytimeCommand(this));
         getCommand("reply").setExecutor(new ReplyCommand(this));
-        getCommand("rocket").setExecutor(new RocketCommand());
+        getCommand("rocket").setExecutor(new RocketCommand(this));
         getCommand("seen").setExecutor(new SeenCommand(this));
         getCommand("sethome").setExecutor(new SetHomeCommand(this));
         getCommand("setspawn").setExecutor(new SetSpawnCommand(this));
         getCommand("setspawner").setExecutor(new SetSpawnerCommand(this));
         getCommand("setwarp").setExecutor(new SetWarpCommand(this));
         getCommand("skull").setExecutor(new SkullCommand(this));
-        getCommand("socialspy").setExecutor(new SocialspyCommand());
+        getCommand("socialspy").setExecutor(new SocialspyCommand(this));
         getCommand("spawn").setExecutor(new SpawnCommand(this));
-        getCommand("spawnmob").setExecutor(new SpawnMobCommand());
-        getCommand("speed").setExecutor(new SpeedCommand());
-        getCommand("sudo").setExecutor(new SudoCommand());
+        getCommand("spawnmob").setExecutor(new SpawnMobCommand(this));
+        getCommand("speed").setExecutor(new SpeedCommand(this));
+        getCommand("sudo").setExecutor(new SudoCommand(this));
         getCommand("teamchat").setExecutor(new TeamchatCommand(this));
         getCommand("tempban").setExecutor(new TempBanCommand(this));
         getCommand("tempmute").setExecutor(new TempMuteCommand(this));
-        getCommand("time").setExecutor(new TimeCommand());
-        getCommand("tokens").setExecutor(new TokensCommand(this));
-        getCommand("tp").setExecutor(new TpCommand());
-        getCommand("tphere").setExecutor(new TpHereCommand());
-        getCommand("tploc").setExecutor(new TpLocCommand());
-        getCommand("tpa").setExecutor(new TpaCommand());
+        getCommand("time").setExecutor(new TimeCommand(this));
+        getCommand("tp").setExecutor(new TpCommand(this));
+        getCommand("tphere").setExecutor(new TpHereCommand(this));
+        getCommand("tploc").setExecutor(new TpLocCommand(this));
+        getCommand("tpa").setExecutor(new TpaCommand(this));
         getCommand("tpaccept").setExecutor(new TpacceptCommand(this));
-        getCommand("tpahere").setExecutor(new TpahereCommand());
+        getCommand("tpahere").setExecutor(new TpahereCommand(this));
         getCommand("tpaccept").setExecutor(new TpacceptCommand(this));
-        getCommand("tpdeny").setExecutor(new TpdenyCommand());
+        getCommand("tpdeny").setExecutor(new TpdenyCommand(this));
         getCommand("unban").setExecutor(new UnBanCommand(this));
         getCommand("unmute").setExecutor(new UnMuteCommand(this));
         getCommand("vanish").setExecutor(new VanishCommand(this));
         getCommand("warp").setExecutor(new WarpCommand(this));
         getCommand("warplist").setExecutor(new WarpListCommand(this));
-        getCommand("weather").setExecutor(new WeatherCommand());
-        getCommand("workbench").setExecutor(new WorkbenchCommand());
-        getCommand("day").setExecutor(new TimeCommand());
-        getCommand("night").setExecutor(new TimeCommand());
-        getCommand("sun").setExecutor(new WeatherCommand());
-        getCommand("rain").setExecutor(new WeatherCommand());
+        getCommand("weather").setExecutor(new WeatherCommand(this));
+        getCommand("workbench").setExecutor(new WorkbenchCommand(this));
+        getCommand("day").setExecutor(new TimeCommand(this));
+        getCommand("night").setExecutor(new TimeCommand(this));
+        getCommand("sun").setExecutor(new WeatherCommand(this));
+        getCommand("rain").setExecutor(new WeatherCommand(this));
         getCommand("kit").setExecutor(new KitCommand(this));
         getCommand("createkit").setExecutor(new CreateKitCommand(this));
         getCommand("deletekit").setExecutor(new DeleteKitCommand(this));
-        getCommand("trash").setExecutor(new TrashCommand());
+        getCommand("trash").setExecutor(new TrashCommand(this));
         getCommand("debugmeta").setExecutor(new DebugmetaCommand(this));
     }
 

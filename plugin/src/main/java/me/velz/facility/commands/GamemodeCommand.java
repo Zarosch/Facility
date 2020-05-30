@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -10,9 +11,15 @@ import org.bukkit.entity.Player;
 
 public class GamemodeCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public GamemodeCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.gamemode")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.gamemode")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }

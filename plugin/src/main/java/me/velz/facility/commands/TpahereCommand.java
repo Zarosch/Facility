@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import me.velz.facility.Facility;
 import me.velz.facility.objects.FacilityTpa;
 import me.velz.facility.utils.MessageUtil;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -12,14 +13,20 @@ import org.bukkit.entity.Player;
 
 public class TpahereCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public TpahereCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.tpahere")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.tpahere")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length == 0) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/tpahere <Spieler>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/tpahere <player>"));
             return true;
         }
         if (args.length == 1) {

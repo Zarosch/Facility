@@ -10,9 +10,15 @@ import org.bukkit.inventory.ItemStack;
 
 public class MoreCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public MoreCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.more")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.more")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }

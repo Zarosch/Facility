@@ -73,6 +73,7 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
             config.addDefault("inventories.test.items.item.actions.rightshift", new String[]{
                 "message>&eShift + Right click"
             });
+            config.addDefault("inventories.test.items.item.actions.shows", new String[]{});
             config.save();
         }
 
@@ -87,19 +88,24 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
                 "&6Verkaufspreis: &f%sell",
                 ""
             });
-            this.getConfig().addDefault("templates.default.items.permission", "facility.inventory.shop");
-            config.addDefault("templates.default.items.actions.right", new String[]{
-                "takemoney>%buy"
+            this.getConfig().addDefault("templates.shop.items.permission", "facility.inventory.shop");
+            config.addDefault("templates.shop.items.actions.right", new String[]{
+                "takemoney>%buy",
+                "giveitem>%item"
             });
-            config.addDefault("templates.default.items.actions.left", new String[]{
-                "givemoney>%sell"
+            config.addDefault("templates.shop.items.actions.left", new String[]{
+                "givemoney>%sell",
+                "takeitem>%item"
             });
-            config.addDefault("templates.default.items.actions.leftshift", new String[]{
-                "message>&eShift + Left click"
+            config.addDefault("templates.shop.items.actions.leftshift", new String[]{
+                "takemoney>%buy",
+                "giveitem>%item"
             });
-            config.addDefault("templates.default.items.actions.rightshift", new String[]{
-                "message>&eShift + Right click"
+            config.addDefault("templates.shop.items.actions.rightshift", new String[]{
+                "takemoney>%buy",
+                "giveitem>%item"
             });
+            config.addDefault("templates.shop.items.actions.shows", new String[]{});
             config.save();
         }
 
@@ -151,9 +157,11 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
             Inventory inventory = Bukkit.createInventory(null, fInventory.getSize(), fInventory.getDisplayName());
             for (Integer slot : fInventory.getItems().keySet()) {
                 boolean show = true;
-                for (String action : fInventory.getItems().get(slot).getActions().get("shows")) {
-                    if (Actions.cancelAction(player, Actions.run(player, action))) {
-                        show = false;
+                if(fInventory.getItems().get(slot).getActions().containsKey("shows")) {
+                    for (String action : fInventory.getItems().get(slot).getActions().get("shows")) {
+                        if (Actions.cancelAction(player, Actions.run(player, action))) {
+                            show = false;
+                        }
                     }
                 }
                 if (show) {
@@ -265,7 +273,8 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         if (event.getView().getTitle().startsWith("§8Inventory Add #")) {
-            String inv = event.getView().getTitle().split("#")[1];
+            String inv = event.getView().getTitle().split("#")[1].split(" ")[0];
+            String template = event.getView().getTitle().split("+")[1];
             int nameI = 0;
             for (ItemStack stack : event.getInventory().getContents()) {
                 if (stack != null) {
@@ -285,18 +294,34 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
                         config.set("inventories." + inv + ".items." + name + ".item", stack);
                         config.set("inventories." + inv + ".items." + name + ".slot", slot);
                         config.set("inventories." + inv + ".items." + name + ".permission", "facility.inventory." + inv);
-                        config.set("inventories." + inv + ".items." + name + ".actions.right", new String[]{
-                            "message>&eRight click"
-                        });
-                        config.set("inventories." + inv + ".items." + name + ".actions.left", new String[]{
-                            "message>&eLeft click"
-                        });
-                        config.set("inventories." + inv + ".items." + name + ".actions.leftshift", new String[]{
-                            "message>&eShift + Left click"
-                        });
-                        config.set("inventories." + inv + ".items." + name + ".actions.rightshift", new String[]{
-                            "message>&eShift + Right click"
-                        });
+                        if(template.equalsIgnoreCase("none")) {
+                            config.set("inventories." + inv + ".items." + name + ".actions.right", new String[]{
+                                "message>&eRight click"
+                            });
+                            config.set("inventories." + inv + ".items." + name + ".actions.left", new String[]{
+                                "message>&eLeft click"
+                            });
+                            config.set("inventories." + inv + ".items." + name + ".actions.leftshift", new String[]{
+                                "message>&eShift + Left click"
+                            });
+                            config.set("inventories." + inv + ".items." + name + ".actions.rightshift", new String[]{
+                                "message>&eShift + Right click"
+                            });
+                        } else {
+                            // Custom Templates
+                            String templatename = template;
+                            HashMap<String, String> variables = new HashMap();
+                            if(templatename.contains(";")) {
+                                templatename = templatename.split(";")[0];
+                                for(String variable : templatename.split(";", 1)[0].split(";")) {
+                                    String key = variable.split("=")[0];
+                                    String value = variable.split("=")[1];
+                                    variables.put(key, value);
+                                }
+                            }
+                            ArrayList<String> rightclick = config.getStringListAsArrayList("templates." + templatename + ".items.actions.right");
+                            
+                        }
                         config.save();
                         this.onReload();
                     }
@@ -330,7 +355,7 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
 
             if (args.length > 0) {
                 if (args[0].equalsIgnoreCase("open")) {
-                    if (!cs.hasPermission("facility.functions.inventory.open")) {
+                    if (!cs.hasPermission(Facility.getInstance().getFileManager().getPermissionPrefix() + ".functions.inventory.open")) {
                         cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                         return true;
                     }
@@ -340,7 +365,7 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
                     }
                     Player player = null;
                     if (args.length >= 3) {
-                        if (!cs.hasPermission("facility.functions.inventory.open.other")) {
+                        if (!cs.hasPermission(Facility.getInstance().getFileManager().getPermissionPrefix() + ".functions.inventory.open.other")) {
                             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                             return true;
                         }
@@ -363,7 +388,7 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
                 }
 
                 if (args[0].equalsIgnoreCase("addinv")) {
-                    if (!cs.hasPermission("facility.functions.inventory.addinv")) {
+                    if (!cs.hasPermission(Facility.getInstance().getFileManager().getPermissionPrefix() + ".functions.inventory.addinv")) {
                         cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                         return true;
                     }
@@ -371,7 +396,7 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
                 }
 
                 if (args[0].equalsIgnoreCase("moveitems")) {
-                    if (!cs.hasPermission("facility.functions.inventory.moveitems")) {
+                    if (!cs.hasPermission(Facility.getInstance().getFileManager().getPermissionPrefix() + ".functions.inventory.moveitems")) {
                         cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                         return true;
                     }
@@ -408,28 +433,32 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
                 }
 
                 if (args[0].equalsIgnoreCase("additems")) {
-                    if (!cs.hasPermission("facility.functions.inventory.additems")) {
+                    if (!cs.hasPermission(Facility.getInstance().getFileManager().getPermissionPrefix() + ".functions.inventory.additems")) {
                         cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                         return true;
                     }
-                    if (args.length != 2) {
-                        cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/inventory additems <Inventory>"));
+                    if (args.length != 2 && args.length != 3) {
+                        cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/inventory additems <Inventory> [Template]"));
                         return true;
                     }
                     String invId = args[1];
+                    String template = "none";
+                    if(args.length == 3) {
+                        template = args[2];
+                    }
                     if (!inventories.containsKey(invId)) {
                         cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.FUNC_INVENTORY_NOTFOUND.getLocal());
                         return true;
                     }
                     Player player = (Player) cs;
-                    Inventory inventory = Bukkit.createInventory(null, 18, "§8Inventory Add #" + invId);
+                    Inventory inventory = Bukkit.createInventory(null, 18, "§8Inventory Add #" + invId + " +" + template);
                     player.openInventory(inventory);
                     cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.FUNC_INVENTORY_ITEMSADD.getLocal());
                     return true;
                 }
 
                 if (args[0].equalsIgnoreCase("list")) {
-                    if (!cs.hasPermission("facility.functions.inventory.list")) {
+                    if (!cs.hasPermission(Facility.getInstance().getFileManager().getPermissionPrefix() + ".functions.inventory.list")) {
                         cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                         return true;
                     }
@@ -449,7 +478,7 @@ public class InventoryFunction implements Function, Listener, CommandExecutor {
                 }
             }
 
-            if (!cs.hasPermission("facility.functions.inventory")) {
+            if (!cs.hasPermission(Facility.getInstance().getFileManager().getPermissionPrefix() + ".functions.inventory")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

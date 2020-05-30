@@ -16,7 +16,7 @@ public class FacilityCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.admin")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".admin")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -31,9 +31,6 @@ public class FacilityCommand implements CommandExecutor {
             plugin.getFileManager().load();
             MessageUtil.load();
             plugin.getFunctionManager().reload();
-            if(plugin.getFileManager().isArenaEnabled()) {
-                plugin.getArenaManager().load();
-            }
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.FACILITY_RELOAD.getLocal());
             return true;
         }

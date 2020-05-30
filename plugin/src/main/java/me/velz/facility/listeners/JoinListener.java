@@ -60,7 +60,7 @@ public class JoinListener implements Listener {
         //</editor-fold>
         //<editor-fold defaultstate="collapsed" desc="Server Full?">
         if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-            if (event.getPlayer().hasPermission("facility.bypass.fullserver")) {
+            if (event.getPlayer().hasPermission(plugin.getFileManager().getPermissionPrefix() + ".bypass.fullserver")) {
                 event.setResult(PlayerLoginEvent.Result.ALLOWED);
             } else {
                 event.setKickMessage(MessageUtil.SERVER_FULL.getLocal());

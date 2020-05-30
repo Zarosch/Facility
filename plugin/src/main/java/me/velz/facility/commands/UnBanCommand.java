@@ -21,12 +21,12 @@ public class UnBanCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.unban")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.unban")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length != 1) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/unban <Spieler>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/unban <player>"));
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -40,7 +40,7 @@ public class UnBanCommand implements CommandExecutor {
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(MessageUtil.PUNISH_UNBANNEDHOVER.getLocal().replaceAll("%punisher", cs.getName())).create()));
                 dbPlayer.setBan("OK");
                 dbPlayer.save();
-                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission("facility.broadcast.unban") || all.hasPermission("facility.broadcast.punish") || all.hasPermission("facility.command.unban"))).forEachOrdered((all) -> {
+                Bukkit.getOnlinePlayers().stream().filter((all) -> (all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.unban") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".broadcast.punish") || all.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.unban"))).forEachOrdered((all) -> {
                     Facility.getInstance().getVersion().sendComponentMessage(all, component);
                 });
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PUNISH_UNBAN.getLocal());

@@ -10,9 +10,15 @@ import org.bukkit.entity.Player;
 
 public class JumpCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public JumpCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.jump")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.jump")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }

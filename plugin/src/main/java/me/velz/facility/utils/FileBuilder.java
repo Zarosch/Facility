@@ -302,6 +302,10 @@ public class FileBuilder {
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="save/load">
+    public final void loadDefaultFile() {
+        Facility.getInstance().saveResource(filename, true);
+    }
+    
     public final void save() {
         try {
             this.configuration.save(this.file);

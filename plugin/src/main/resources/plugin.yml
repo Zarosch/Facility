@@ -5,9 +5,6 @@ api-version: 1.13
 main: me.velz.facility.Facility
 softdepend: [PlaceholderAPI, Vault]
 commands:
-    arena:
-        description: Arena Command
-        aliases: [a]
     blockphysics:
         description: Toggle Blockphysics
         aliases: [tbs]
@@ -113,9 +110,6 @@ commands:
         aliases: [homes, listhomes]
     delhome:
         description: Home löschen
-    money:
-        description: Geld einsehen
-        aliases: [bal, balance]
     motd:
         description: Zeigt die Motd erneut an.
     warplist:
@@ -168,11 +162,6 @@ commands:
         description: Tempmute Command
     unmute:
         description: Unmute Command
-    tokens:
-        description: Token Command
-        aliases: [token]
-    pay:
-        description: Pay Command
     kit:
         description: Kit Command
         aliases: [kits]

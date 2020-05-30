@@ -14,10 +14,6 @@ public class DatabasePlayer {
     
     @Getter
     @Setter
-    private double money, token;
-    
-    @Getter
-    @Setter
     private int playtime;
     
     @Getter
@@ -33,6 +29,9 @@ public class DatabasePlayer {
     
     @Getter
     private final HashMap<String, String> meta = new HashMap<>();
+    
+    @Getter
+    private final HashMap<String, Double> currencies = new HashMap<>();
 
     public DatabasePlayer(String uuid, String name) {
         this.uuid = uuid;

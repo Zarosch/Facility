@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import me.velz.facility.Facility;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -9,9 +10,15 @@ import org.bukkit.entity.Player;
 
 public class EnderChestCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public EnderChestCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.enderchest")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.enderchest")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -24,7 +31,7 @@ public class EnderChestCommand implements CommandExecutor {
             player.openInventory(player.getEnderChest());
             player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYER_ENDERCHEST_SELF.getLocal());
         } else {
-            if (!cs.hasPermission("facility.command.enderchest.other")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.enderchest.other")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }

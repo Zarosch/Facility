@@ -10,9 +10,15 @@ import org.bukkit.inventory.ItemStack;
 
 public class HatCommand implements CommandExecutor {
     
+    private final Facility plugin; 
+
+    public HatCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String args, String[] label) {
-        if (!cs.hasPermission("facility.command.hat")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.hat")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }

@@ -20,12 +20,12 @@ public class TpacceptCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.tpaccept")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.tpaccept")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length == 0) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/tpaccept <Spieler>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/tpaccept <player>"));
             return true;
         }
         if (args.length == 1) {
@@ -49,7 +49,7 @@ public class TpacceptCommand implements CommandExecutor {
                 return true;
             }
             if (facilityTpa.getType().equalsIgnoreCase("tpa")) {
-                if (target.hasPermission("facility.bypass.teleportdelay")) {
+                if (target.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".bypass.teleportdelay")) {
                     target.teleport(player);
                     target.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_ACCPTED_PLAYER.getLocal().replaceAll("%player", player.getName()));
                     player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_ACCPTED_TARGET.getLocal().replaceAll("%player", target.getName()));
@@ -59,7 +59,7 @@ public class TpacceptCommand implements CommandExecutor {
                 }
             }
             if (facilityTpa.getType().equalsIgnoreCase("tpahere")) {
-                if (player.hasPermission("facility.bypass.teleportdelay")) {
+                if (player.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".bypass.teleportdelay")) {
                     player.teleport(target);
                     target.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_ACCPTED_PLAYER.getLocal().replaceAll("%player", player.getName()));
                     player.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.TELEPORT_TPA_ACCPTED_TARGET.getLocal().replaceAll("%player", target.getName()));

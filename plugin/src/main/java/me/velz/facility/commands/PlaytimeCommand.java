@@ -19,7 +19,7 @@ public class PlaytimeCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.playtime")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.playtime")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
@@ -41,23 +41,20 @@ public class PlaytimeCommand implements CommandExecutor {
             });
             return true;
         } else {
-            if (!cs.hasPermission("facility.command.playtime.other")) {
+            if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.playtime.other")) {
                 cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
                 return true;
             }
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
-                    if (dbPlayer.isSuccess()) {
-                        final String playtime = Facility.getInstance().getTools().getPlaytime(dbPlayer.getPlaytime());
-                        if (!dbPlayer.isOnline()) {
-                            dbPlayer.save();
-                        }
-                        cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYTIME_OTHER.getLocal().replaceAll("%playtime", playtime).replaceAll("%player", args[0]));
-                    } else {
-                        cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_PLAYERNOTFOUND.getLocal());
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                final DatabasePlayer dbPlayer = plugin.getDatabase().getUser(args[0]);
+                if (dbPlayer.isSuccess()) {
+                    final String playtime = Facility.getInstance().getTools().getPlaytime(dbPlayer.getPlaytime());
+                    if (!dbPlayer.isOnline()) {
+                        dbPlayer.save();
                     }
+                    cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.PLAYTIME_OTHER.getLocal().replaceAll("%playtime", playtime).replaceAll("%player", args[0]));
+                } else {
+                    cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_PLAYERNOTFOUND.getLocal());
                 }
             });
         }

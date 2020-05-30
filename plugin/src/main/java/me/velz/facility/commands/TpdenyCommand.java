@@ -1,5 +1,6 @@
 package me.velz.facility.commands;
 
+import me.velz.facility.Facility;
 import me.velz.facility.objects.FacilityTpa;
 import me.velz.facility.utils.MessageUtil;
 import org.bukkit.Bukkit;
@@ -10,14 +11,20 @@ import org.bukkit.entity.Player;
 
 public class TpdenyCommand implements CommandExecutor {
 
+    private final Facility plugin;
+
+    public TpdenyCommand(Facility plugin) {
+        this.plugin = plugin;
+    }
+    
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.tpdeny")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.tpdeny")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
         if (args.length == 0) {
-            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/tpdeny <Spieler>"));
+            cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_SYNTAX.getLocal().replaceAll("%command", "/tpdeny <player>"));
             return true;
         }
         if (args.length == 1) {

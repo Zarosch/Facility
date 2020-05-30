@@ -19,7 +19,7 @@ public class KitCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
-        if (!cs.hasPermission("facility.command.kit")) {
+        if (!cs.hasPermission(plugin.getFileManager().getPermissionPrefix() + ".command.kit")) {
             cs.sendMessage(MessageUtil.PREFIX.getLocal() + MessageUtil.ERROR_NOPERMISSIONS.getLocal());
             return true;
         }
